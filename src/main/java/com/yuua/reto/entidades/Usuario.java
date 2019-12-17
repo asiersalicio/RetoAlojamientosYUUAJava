@@ -11,5 +11,4 @@ import javax.persistence.Table;
 @Table(name = "usuario")
 public class Usuario {
 	
-	
 }
