@@ -1,8 +1,9 @@
 package com.yuua.reto.conexionbd;
 
+import java.io.File;
+
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 
 /**
@@ -12,13 +13,24 @@ import org.hibernate.cfg.Configuration;
 public class App {
 	public static void main(String[] args) {
 
-		Manzana roja=new Manzana(0, 20, "Sovietica");
-		Configuration conf = new Configuration().configure().addAnnotatedClass(Manzana.class);
+		Configuration conf = new Configuration().configure(new File("src/main/java/hibernate.cfg.xml"));
 		SessionFactory sf = conf.buildSessionFactory();
 		Session session = sf.openSession();
-		Transaction tr =  session.beginTransaction();
-		session.save(roja);
-		tr.commit();
 
+		session.beginTransaction();
+
+		Manzana roja = new Manzana();
+		roja.setId(1);
+		roja.setPeso(20);
+		roja.setEspecie("Sovietica");
+
+		// Save the employee in database
+		session.save(roja);
+
+		// Commit the transaction
+		session.getTransaction().commit();
+
+		sf.close();
 	}
+
 }

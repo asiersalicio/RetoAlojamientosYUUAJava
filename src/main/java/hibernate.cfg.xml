@@ -5,9 +5,10 @@
 <hibernate-configuration>
     <session-factory>
         <property name="hibernate.connection.driver_class">com.mysql.cj.jdbc.Driver</property>
-        <property name="hibernate.connection.password">Elchapas23</property>
+        <property name="hibernate.connection.password">elchapas23</property>
         <property name="hibernate.connection.url">jdbc:mysql://192.168.101.21/retoalojamientos</property>
         <property name="hibernate.connection.username">retoaloj</property>
         <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+        <mapping class="com.yuua.reto.conexionbd.Manzana"></mapping>
     </session-factory>
 </hibernate-configuration>
