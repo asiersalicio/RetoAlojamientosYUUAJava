@@ -13,7 +13,7 @@ public class App {
 		
 		xml.downloadNewXML();
 		
-		xml.toAlojamientoById(1);
+		xml.toAlojamientoById(25);
 //		Configuration conf = new Configuration().configure(new File("src/main/java/hibernate.cfg.xml"));
 //		SessionFactory sf = conf.buildSessionFactory();
 //		Session session = sf.openSession();

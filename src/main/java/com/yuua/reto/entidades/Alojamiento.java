@@ -39,6 +39,23 @@ public class Alojamiento {
 		}
 		
 		
+		
+		public Alojamiento(int id, String tipo, String nombre, String descripcion, int telefono, String web,
+				String email, int capacidad, Localizacion localizacion) {
+			super();
+			this.id = id;
+			this.tipo = tipo;
+			this.nombre = nombre;
+			this.descripcion = descripcion;
+			this.telefono = telefono;
+			this.web = web;
+			this.email = email;
+			this.capacidad = capacidad;
+			this.localizacion = localizacion;
+		}
+
+
+
 		public int getId() {
 			return id;
 		}

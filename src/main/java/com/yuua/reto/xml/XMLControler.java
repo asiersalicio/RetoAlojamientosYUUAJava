@@ -21,7 +21,6 @@ import com.yuua.reto.entidades.Alojamiento;
 
 public class XMLControler {
 
-	private Document doc;
 	public String url;
 	private String filepath;
 
@@ -54,8 +53,6 @@ public class XMLControler {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
-		doc = parseXML();
 	}
 
 	private Node extractNodeFromXML(int idlist) {
@@ -87,6 +84,9 @@ public class XMLControler {
 	}
 
 	public Alojamiento toAlojamientoById(int id) {
+		String nombre = "", descripcion = "", direccion = "", web = "", email = "";
+		int telefono = -1, capacidad = -1;
+		Alojamiento aloj = null;
 		
 		Node xmlNode=extractNodeFromXML(id);
 		
@@ -94,13 +94,25 @@ public class XMLControler {
 
 			Element eElement = (Element) xmlNode;
 
-			String nombre = eElement.getElementsByTagName("documentname").item(0).getTextContent();
-			String descripcion = eElement.getElementsByTagName("turismdescription").item(1).getTextContent();
-			String direccion = eElement.getElementsByTagName("address").item(0).getTextContent();
+			try{nombre = eElement.getElementsByTagName("documentname").item(0).getTextContent();}catch(Exception e1) {};
+			try{descripcion = eElement.getElementsByTagName("turismdescription").item(1).getTextContent();}catch(Exception e2) {};
+			try{direccion = eElement.getElementsByTagName("address").item(0).getTextContent();}catch(Exception e3) {};
+			try{telefono = Integer.parseInt(eElement.getElementsByTagName("phone").item(0).getTextContent().replace(" ", ""));}catch(Exception e4) {};
+			try{web = eElement.getElementsByTagName("web").item(0).getTextContent();}catch(Exception e5) {};
+			try{email = eElement.getElementsByTagName("tourismemail").item(0).getTextContent();}catch(Exception e6) {};
+			try{capacidad = Integer.parseInt(eElement.getElementsByTagName("capacity").item(0).getTextContent());}catch(Exception e7) {};
+			
 			System.out.println("Nombre: " + nombre);
 			System.out.println("Descripcion: " + descripcion);
 			System.out.println("Direccion: " + direccion);
+			System.out.println("Telefono: " + telefono);
+			System.out.println("Web: " + web);
+			System.out.println("Email: " + email);
+			System.out.println("Capacidad: " + capacidad);
+			aloj = new Alojamiento(id, "tipo sin rellenar", nombre, descripcion, telefono, web, email, capacidad, null);
+			
+			
 		}
-		return null;
+		return aloj;
 	}
 }
