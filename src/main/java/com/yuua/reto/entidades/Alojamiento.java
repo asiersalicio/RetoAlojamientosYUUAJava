@@ -8,7 +8,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "talojamientos")
-public class Alojamientos {
+public class Alojamiento {
 
 	@Id
 	@Column(name = "idAlojamiento")
@@ -27,10 +27,30 @@ public class Alojamientos {
 	String email;
 	@Column(name = "capacity")
 	int capacidad;
-	//@OneToOne
-	//Localizacion localizacion;
+	// @OneToOne
+	// Localizacion localizacion;
 
-	protected Alojamientos() {
+	protected Alojamiento() {
+	}
+
+	public Alojamiento(int id, String tipo, String nombre, String descripcion, int telefono, String web, String email, int capacidad) {
+		super();
+		this.id = id;
+		this.tipo = tipo;
+		this.nombre = nombre;
+		this.descripcion = descripcion;
+		this.telefono = telefono;
+		this.web = web;
+		this.email = email;
+		this.capacidad = capacidad;
+	}
+
+	public int getCapacidad() {
+		return capacidad;
+	}
+
+	public void setCapacidad(int capacidad) {
+		this.capacidad = capacidad;
 	}
 
 	public int getId() {
@@ -88,4 +108,5 @@ public class Alojamientos {
 	public void setEmail(String email) {
 		this.email = email;
 	}
+
 }
