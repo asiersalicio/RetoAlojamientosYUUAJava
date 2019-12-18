@@ -12,7 +12,7 @@
         <property name="hibernate.hbm2ddl.auto">create</property>
         <property name="show_sql">true</property>
         <mapping class="com.yuua.reto.entidades.Localizacion"></mapping>
-        <mapping class="com.yuua.reto.entidades.Alojamientos"></mapping>
+        <mapping class="com.yuua.reto.entidades.Alojamiento"></mapping>
         <mapping class="com.yuua.reto.entidades.Municipio"></mapping>
         <mapping class="com.yuua.reto.entidades.Territorio"></mapping>
         <mapping class="com.yuua.reto.entidades.Pais"></mapping>

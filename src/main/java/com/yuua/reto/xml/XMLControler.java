@@ -6,10 +6,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -132,6 +140,27 @@ public class XMLControler {
 
 		}
 		return aloj;
+	}
+
+	public ArrayList<Pais> buscarPaises() {
+		try {
+			ArrayList<Pais> paises = new ArrayList<Pais>();
+			Document doc = parseXML();
+			XPathFactory xpathfactory = XPathFactory.newInstance();
+			XPath xpath = xpathfactory.newXPath();
+			XPathExpression expr = xpath.compile("distinct-values(/*/row/country)");
+			Object result = expr.evaluate(doc, XPathConstants.NODESET);
+			NodeList nodosPaises = (NodeList) result;
+			expr = xpath.compile("distinct-values(/*/row/countrycode)");
+			result = expr.evaluate(doc, XPathConstants.NODESET);
+			NodeList codigoPaises = (NodeList) result;
+			for (int i = 0; i < nodosPaises.getLength(); i++) {
+				paises.add(new Pais(Integer.valueOf(codigoPaises.item(i).getTextContent()), nodosPaises.item(i).getTextContent()));
+			}
+			return paises;
+		} catch (XPathExpressionException e) {
+			return null;
+		}
 	}
 
 	private String obtenerElement(Element eElement, String tagName, int itemIndex) {

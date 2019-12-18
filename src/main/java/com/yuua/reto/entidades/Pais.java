@@ -28,6 +28,12 @@ public class Pais {
 		return id;
 	}
 
+	public Pais(int id, String nombre) {
+		super();
+		this.id = id;
+		this.nombre = nombre;
+	}
+
 	public void setId(int id) {
 		this.id = id;
 	}
