@@ -1,19 +1,39 @@
 package com.yuua.reto.conexionbd;
 
+import com.yuua.reto.entidades.Municipio;
+import com.yuua.reto.entidades.Pais;
+import com.yuua.reto.entidades.Territorio;
 import com.yuua.reto.xml.XMLControler;
 
-/**
- * Hello world!
- *
- */
+
 public class App {
+	
+	public Pais pais;
+	public Territorio territorio;
+	public Municipio municipio;
+	
 	public static void main(String[] args) {
 
-		XMLControler xml =new XMLControler("http://opendata.euskadi.eus/contenidos/ds_recursos_turisticos/alojamiento_de_euskadi/opendata/alojamientos.xml");
 		
-		xml.downloadNewXML();
+		XMLControler xmlAlojamientos =new XMLControler("http://opendata.euskadi.eus/contenidos/ds_recursos_turisticos/alojamiento_de_euskadi/opendata/alojamientos.xml", "Alojamientos");
+		XMLControler xmlAlbergues =new XMLControler("http://opendata.euskadi.eus/contenidos/ds_recursos_turisticos/albergues_de_euskadi/opendata/alojamientos.xml", "Albergues");
+		XMLControler xmlCamping = new XMLControler("http://opendata.euskadi.eus/contenidos/ds_recursos_turisticos/campings_de_euskadi/opendata/alojamientos.xml", "Camping");
 		
-		xml.toAlojamientoById(1);
+		xmlAlojamientos.downloadNewXML();
+		xmlAlbergues.downloadNewXML();
+		xmlCamping.downloadNewXML();
+		
+		
+		System.out.println(xmlAlojamientos.getSize());
+		xmlAlojamientos.toAlojamientoById(1);
+		
+		System.out.println(xmlAlbergues.getSize());
+		xmlAlbergues.toAlojamientoById(1);		
+		
+		System.out.println(xmlCamping.getSize());
+		xmlCamping.toAlojamientoById(1);
+				
+		
 //		Configuration conf = new Configuration().configure(new File("src/main/java/hibernate.cfg.xml"));
 //		SessionFactory sf = conf.buildSessionFactory();
 //		Session session = sf.openSession();

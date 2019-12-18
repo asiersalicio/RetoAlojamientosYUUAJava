@@ -6,10 +6,6 @@ import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-
 @Entity
 
 @Table(name="talojamientos")
@@ -35,7 +31,7 @@ public class Alojamiento {
 		@OneToOne
 		Localizacion localizacion;
 		
-		protected Alojamiento() {
+		public Alojamiento() {
 		}
 		
 		
@@ -112,5 +108,29 @@ public class Alojamiento {
 
 		public void setEmail(String email) {
 			this.email = email;
+		}
+
+
+
+		public int getCapacidad() {
+			return capacidad;
+		}
+
+
+
+		public void setCapacidad(int capacidad) {
+			this.capacidad = capacidad;
+		}
+
+
+
+		public Localizacion getLocalizacion() {
+			return localizacion;
+		}
+
+
+
+		public void setLocalizacion(Localizacion localizacion) {
+			this.localizacion = localizacion;
 		}
 }
