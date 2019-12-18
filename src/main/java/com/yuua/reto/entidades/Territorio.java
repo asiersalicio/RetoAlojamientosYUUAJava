@@ -5,8 +5,6 @@ import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -25,6 +23,21 @@ public class Territorio {
 
 	public Territorio() {
 
+	}
+
+	public Territorio(int id, String nombre) {
+		super();
+		this.id = id;
+		this.nombre = nombre;
+	}
+	
+
+	public Set<Localizacion> getTlocalizacion() {
+		return tlocalizacion;
+	}
+
+	public void setTlocalizacion(Set<Localizacion> tlocalizacion) {
+		this.tlocalizacion = tlocalizacion;
 	}
 
 	public int getId() {

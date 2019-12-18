@@ -10,9 +10,9 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "usuario")
 public class Usuario {
-	
+
 	@Id
-	@Column(name = "idDni") 
+	@Column(name = "idDni")
 	private String idDni;
 	@Column(name = "nombre")
 	private String nombre;
@@ -30,13 +30,12 @@ public class Usuario {
 	private String correo;
 	@Column(name = "telefono")
 	private long telefono;
-	
+
 	protected Usuario() {
-		
+
 	}
 
-	public Usuario(String idDni, String nombre, String apellidos, String tipoUsuario, String nombreUsuario,
-			String contrasena, Date fechaNacimiento, String correo, long telefono) {
+	public Usuario(String idDni, String nombre, String apellidos, String tipoUsuario, String nombreUsuario, String contrasena, Date fechaNacimiento, String correo, long telefono) {
 		super();
 		this.idDni = idDni;
 		this.nombre = nombre;
@@ -120,6 +119,5 @@ public class Usuario {
 	public void setTelefono(long telefono) {
 		this.telefono = telefono;
 	}
-	
-	
+
 }

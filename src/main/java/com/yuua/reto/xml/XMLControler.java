@@ -30,12 +30,12 @@ public class XMLControler {
 
 	public XMLControler(String url, String tipo) {
 		this.url = url;
-		this.tipo= tipo;
+		this.tipo = tipo;
 	}
 
 	public void downloadNewXML() {
 		try {
-			filepath=System.getProperty("user.dir") + "/" + tipo + url.substring(url.lastIndexOf("/")+1);
+			filepath = System.getProperty("user.dir") + "/" + tipo + url.substring(url.lastIndexOf("/") + 1);
 
 			URLConnection conn = new URL(url).openConnection();
 
@@ -66,9 +66,8 @@ public class XMLControler {
 		Node nNode = nList.item(idlist);
 		return nNode;
 	}
-	
-	public int getSize()
-	{
+
+	public int getSize() {
 		Document doc = parseXML();
 		NodeList nList = doc.getElementsByTagName("row");
 		return nList.getLength();
@@ -99,11 +98,11 @@ public class XMLControler {
 		String nombre = "", descripcion = "", direccion = "", web = "", email = "", tipo = "", pais = "", municipio = "", territorio = "", codigoPostal = "", marca = "";
 		int telefono = -1, capacidad = -1;
 		double latitud, longitud;
-		
+
 		Alojamiento aloj = null;
 		id--;
-		Node xmlNode=extractNodeFromXML(id);
-		
+		Node xmlNode = extractNodeFromXML(id);
+
 		if (xmlNode.getNodeType() == Node.ELEMENT_NODE) {
 
 			Element eElement = (Element) xmlNode;
@@ -116,9 +115,7 @@ public class XMLControler {
 			web = obtenerElement(eElement, "web", 0);
 			email = obtenerElement(eElement, "tourismemail", 0);
 			capacidad = Integer.parseInt(obtenerElement(eElement, "capacity", 0));
-			
-			
-			
+
 			System.out.println("Nombre: " + nombre);
 			System.out.println("Tipo: " + tipo);
 			System.out.println("Descripcion: " + descripcion);
@@ -127,24 +124,22 @@ public class XMLControler {
 			System.out.println("Web: " + web);
 			System.out.println("Email: " + email);
 			System.out.println("Capacidad: " + capacidad);
-			
-			
-			//Localizacion loc = new Localizacion(id, null, municipio, territorio, codigoPostal, direccion, marca, latitud, longitud);
-			aloj = new Alojamiento(id, tipo, nombre, descripcion, telefono, web, email, capacidad, null);
-			
-			
+
+			// Localizacion loc = new Localizacion(id, null, municipio, territorio,
+			// codigoPostal, direccion, marca, latitud, longitud);
+			// aloj = new Alojamiento(id, tipo, nombre, descripcion, telefono, web, email,
+			// capacidad, null);
+
 		}
 		return aloj;
 	}
-	
-	private String obtenerElement(Element eElement, String tagName, int itemIndex)
-	{
+
+	private String obtenerElement(Element eElement, String tagName, int itemIndex) {
 		Node node = eElement.getElementsByTagName(tagName).item(itemIndex);
-		if(node!=null)
-		{
+		if (node != null) {
 			return Utilidades.quitarFormateo(node.getTextContent());
 		}
 		return "";
 	}
-	
+
 }
