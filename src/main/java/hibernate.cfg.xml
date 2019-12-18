@@ -8,7 +8,9 @@
         <property name="hibernate.connection.password">elchapas23</property>
         <property name="hibernate.connection.url">jdbc:mysql://192.168.101.21/retoalojamientos</property>
         <property name="hibernate.connection.username">retoaloj</property>
-        <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+        <property name="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</property>
+        <property name="hibernate.hbm2ddl.auto">create</property>
+        <property name="show_sql">true</property>
         <mapping class="com.yuua.reto.conexionbd.Manzana"></mapping>
     </session-factory>
 </hibernate-configuration>
