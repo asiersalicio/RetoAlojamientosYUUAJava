@@ -5,9 +5,13 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+
 @Entity
 @Table(name="alojamientos")
-public class Alojamientos {
+public class Alojamiento {
 	//@GeneratedValue(strategy = GenerationType.IDENTITY)
 		@Id
 		@Column(name = "idAlojamiento")
@@ -35,10 +39,12 @@ public class Alojamientos {
 		@Column(name = "lonwgs84")
 		int longitud;
 		
-		protected Alojamientos() {
+		protected Alojamiento() {
 		}
+		
+		
 
-		public Alojamientos(int id, String tipo, String nombre, String descripcion, String direccion, String municipio,
+		public Alojamiento(int id, String tipo, String nombre, String descripcion, String direccion, String municipio,
 				String provincia, int telefono, String web, String email, int latitud, int longitud) {
 			super();
 			this.id = id;

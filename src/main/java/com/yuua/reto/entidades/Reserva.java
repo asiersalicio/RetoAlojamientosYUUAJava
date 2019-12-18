@@ -25,7 +25,7 @@ public class Reserva {
 	private Date fechaSalida;
 	@OneToOne
     @JoinColumn(name = "idAlojamiento")
-    private Alojamientos alojamiento;
+    private Alojamiento alojamiento;
 	@OneToOne
     @JoinColumn(name = "idDni")
     private Usuario usuario;
@@ -34,7 +34,7 @@ public class Reserva {
 		
 	}
 
-	public Reserva(int id, Date fechaEntrada, Date fechaSalida, Alojamientos alojamiento, Usuario usuario) {
+	public Reserva(int id, Date fechaEntrada, Date fechaSalida, Alojamiento alojamiento, Usuario usuario) {
 		super();
 		this.id = id;
 		this.fechaEntrada = fechaEntrada;
@@ -67,11 +67,11 @@ public class Reserva {
 		this.fechaSalida = fechaSalida;
 	}
 
-	public Alojamientos getAlojamiento() {
+	public Alojamiento getAlojamiento() {
 		return alojamiento;
 	}
 
-	public void setAlojamiento(Alojamientos alojamiento) {
+	public void setAlojamiento(Alojamiento alojamiento) {
 		this.alojamiento = alojamiento;
 	}
 

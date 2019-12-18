@@ -1,12 +1,6 @@
 package com.yuua.reto.conexionbd;
 
-import java.io.File;
-
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
-
-import com.yuua.reto.xml.Xmldownloader;
+import com.yuua.reto.xml.XMLControler;
 
 /**
  * Hello world!
@@ -15,7 +9,11 @@ import com.yuua.reto.xml.Xmldownloader;
 public class App {
 	public static void main(String[] args) {
 
-		new Xmldownloader();
+		XMLControler xml =new XMLControler("http://opendata.euskadi.eus/contenidos/ds_recursos_turisticos/alojamiento_de_euskadi/opendata/alojamientos.xml");
+		
+		xml.downloadNewXML();
+		
+		xml.toAlojamientoById(1);
 //		Configuration conf = new Configuration().configure(new File("src/main/java/hibernate.cfg.xml"));
 //		SessionFactory sf = conf.buildSessionFactory();
 //		Session session = sf.openSession();
