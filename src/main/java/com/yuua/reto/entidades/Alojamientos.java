@@ -7,87 +7,85 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="talojamientos")
+@Table(name = "talojamientos")
 public class Alojamientos {
-	
-		@Id
-		@Column(name = "idAlojamiento")
-		int id;
-		@Column(name = "lodgingtype")
-		String tipo;
-		@Column(name = "documentname")
-		String nombre;
-		@Column(name = "turismdescription")
-		String descripcion;
-		@Column(name = "phone")
-		int telefono;
-		@Column(name = "web")
-		String web;
-		@Column(name = "tourismemail")
-		String email;
-		@Column(name = "capacity")
-		int capacidad;
-		@OneToOne
-		Localizacion localizacion;
-		
-		protected Alojamientos() {
-		}
 
-		public int getId() {
-			return id;
-		}
+	@Id
+	@Column(name = "idAlojamiento")
+	int id;
+	@Column(name = "lodgingtype")
+	String tipo;
+	@Column(name = "documentname")
+	String nombre;
+	@Column(name = "turismdescription")
+	String descripcion;
+	@Column(name = "phone")
+	int telefono;
+	@Column(name = "web")
+	String web;
+	@Column(name = "tourismemail")
+	String email;
+	@Column(name = "capacity")
+	int capacidad;
+	//@OneToOne
+	//Localizacion localizacion;
 
-		public void setId(int id) {
-			this.id = id;
-		}
+	protected Alojamientos() {
+	}
 
-		public String getTipo() {
-			return tipo;
-		}
+	public int getId() {
+		return id;
+	}
 
-		public void setTipo(String tipo) {
-			this.tipo = tipo;
-		}
+	public void setId(int id) {
+		this.id = id;
+	}
 
-		public String getNombre() {
-			return nombre;
-		}
+	public String getTipo() {
+		return tipo;
+	}
 
-		public void setNombre(String nombre) {
-			this.nombre = nombre;
-		}
+	public void setTipo(String tipo) {
+		this.tipo = tipo;
+	}
 
-		public String getDescripcion() {
-			return descripcion;
-		}
+	public String getNombre() {
+		return nombre;
+	}
 
-		public void setDescripcion(String descripcion) {
-			this.descripcion = descripcion;
-		}
+	public void setNombre(String nombre) {
+		this.nombre = nombre;
+	}
 
-		
+	public String getDescripcion() {
+		return descripcion;
+	}
 
-		public int getTelefono() {
-			return telefono;
-		}
+	public void setDescripcion(String descripcion) {
+		this.descripcion = descripcion;
+	}
 
-		public void setTelefono(int telefono) {
-			this.telefono = telefono;
-		}
+	public int getTelefono() {
+		return telefono;
+	}
 
-		public String getWeb() {
-			return web;
-		}
+	public void setTelefono(int telefono) {
+		this.telefono = telefono;
+	}
 
-		public void setWeb(String web) {
-			this.web = web;
-		}
+	public String getWeb() {
+		return web;
+	}
 
-		public String getEmail() {
-			return email;
-		}
+	public void setWeb(String web) {
+		this.web = web;
+	}
 
-		public void setEmail(String email) {
-			this.email = email;
-		}
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
 }
