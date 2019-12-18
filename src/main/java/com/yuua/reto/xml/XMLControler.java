@@ -87,20 +87,20 @@ public class XMLControler {
 		String nombre = "", descripcion = "", direccion = "", web = "", email = "";
 		int telefono = -1, capacidad = -1;
 		Alojamiento aloj = null;
-		
+		id--;
 		Node xmlNode=extractNodeFromXML(id);
 		
 		if (xmlNode.getNodeType() == Node.ELEMENT_NODE) {
 
 			Element eElement = (Element) xmlNode;
 
-			try{nombre = eElement.getElementsByTagName("documentname").item(0).getTextContent();}catch(Exception e1) {};
-			try{descripcion = eElement.getElementsByTagName("turismdescription").item(1).getTextContent();}catch(Exception e2) {};
-			try{direccion = eElement.getElementsByTagName("address").item(0).getTextContent();}catch(Exception e3) {};
-			try{telefono = Integer.parseInt(eElement.getElementsByTagName("phone").item(0).getTextContent().replace(" ", ""));}catch(Exception e4) {};
-			try{web = eElement.getElementsByTagName("web").item(0).getTextContent();}catch(Exception e5) {};
-			try{email = eElement.getElementsByTagName("tourismemail").item(0).getTextContent();}catch(Exception e6) {};
-			try{capacidad = Integer.parseInt(eElement.getElementsByTagName("capacity").item(0).getTextContent());}catch(Exception e7) {};
+			nombre = obtenerElement(eElement, "documentname", 0);
+			descripcion = obtenerElement(eElement, "turismdescription", 1);
+			direccion = obtenerElement(eElement, "address", 0);
+			telefono = Integer.parseInt(obtenerElement(eElement, "phone", 0).replace(" ", ""));
+			web = obtenerElement(eElement, "web", 0);
+			email = obtenerElement(eElement, "tourismemail", 0);
+			capacidad = Integer.parseInt(obtenerElement(eElement, "capacity", 0));
 			
 			System.out.println("Nombre: " + nombre);
 			System.out.println("Descripcion: " + descripcion);
@@ -114,5 +114,15 @@ public class XMLControler {
 			
 		}
 		return aloj;
+	}
+	
+	private String obtenerElement(Element eElement, String tagName, int itemIndex)
+	{
+		Node node = eElement.getElementsByTagName(tagName).item(itemIndex);
+		if(node!=null)
+		{
+			return node.getTextContent();
+		}
+		return "";
 	}
 }
