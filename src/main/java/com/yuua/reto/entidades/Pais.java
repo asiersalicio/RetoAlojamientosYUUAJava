@@ -13,9 +13,9 @@ import javax.persistence.Table;
 public class Pais {
 	@Id
 	@Column(name = "countrycode")
-	int id;
+	public char[] id;
 	@Column(name = "country")
-	String nombre;
+	public String nombre;
 
 	@OneToMany(mappedBy = "tpais")
 	private Set<Localizacion> tlocalizacion;
@@ -24,17 +24,21 @@ public class Pais {
 
 	}
 
-	public int getId() {
+	public char[] getId() {
 		return id;
 	}
 
-	public Pais(int id, String nombre) {
+	public Pais(char[] id, String nombre) {
 		super();
 		this.id = id;
 		this.nombre = nombre;
 	}
+	
+	public Pais recrearPais() {
+		return new Pais(this.id, this.nombre);
+	}
 
-	public void setId(int id) {
+	public void setId(char[] id) {
 		this.id = id;
 	}
 

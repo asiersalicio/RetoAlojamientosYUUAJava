@@ -2,15 +2,20 @@ package com.yuua.reto.entidades;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.hibernate.Session;
+
 @Entity
 @Table(name = "tlocalizacion")
 public class Localizacion {
 	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "idLocalizacion")
 	int id;
 	@ManyToOne
@@ -44,6 +49,22 @@ public class Localizacion {
 		this.tpais = tpais;
 		this.tmunicipio = tmunicipio;
 		this.tterritorio = tterritorio;
+		this.codigoPostal = codigoPostal;
+		this.direccion = direccion;
+		this.marca = marca;
+		this.latitud = latitud;
+		this.longitud = longitud;
+	}
+
+	public void cargarLocalizacion(Session session, String idPais, String idTerritorio, String idMunicipio) {
+		this.tpais=session.get(Pais.class, idPais);
+		this.tterritorio=session.get(Territorio.class, idPais);
+		this.tmunicipio=session.get(Municipio.class, idPais);
+	}
+
+	public Localizacion(int id, String codigoPostal, String direccion, String marca, Double latitud, Double longitud) {
+		super();
+		this.id = id;
 		this.codigoPostal = codigoPostal;
 		this.direccion = direccion;
 		this.marca = marca;

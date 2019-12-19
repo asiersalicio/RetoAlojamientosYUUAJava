@@ -13,10 +13,10 @@ import javax.persistence.Table;
 public class Territorio {
 	@Id
 	@Column(name = "territorycode")
-	int id;
+	public char[] id;
 
 	@Column(name = "territory")
-	String nombre;
+	public String nombre;
 
 	@OneToMany(mappedBy = "tterritorio")
 	private Set<Localizacion> tlocalizacion;
@@ -24,11 +24,15 @@ public class Territorio {
 	public Territorio() {
 
 	}
+	
 
-	public Territorio(int id, String nombre) {
-		super();
+	public Territorio(char[] id, String nombre) {
 		this.id = id;
 		this.nombre = nombre;
+	}
+	
+	public Territorio recrearTerritorio() {
+		return new Territorio(this.id, this.nombre);
 	}
 	
 
@@ -40,11 +44,11 @@ public class Territorio {
 		this.tlocalizacion = tlocalizacion;
 	}
 
-	public int getId() {
+	public char[] getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(char[] id) {
 		this.id = id;
 	}
 
