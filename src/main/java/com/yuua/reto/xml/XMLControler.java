@@ -1,9 +1,11 @@
 package com.yuua.reto.xml;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
@@ -21,6 +23,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+import org.apache.commons.io.FileUtils;
 
 import com.yuua.reto.entidades.Alojamiento;
 import com.yuua.reto.entidades.Localizacion;
@@ -35,35 +38,63 @@ public class XMLControler {
 	private String tipo;
 	private int size;
 	Document doc;
+	private boolean updateRequired = true;
 
 	public XMLControler(String url, String tipo) {
 		this.url = url;
 		this.tipo = tipo;
 	}
 
+	public boolean isUpdateRequired() {
+		return updateRequired;
+	}
+
+	public void setUpdateRequired(boolean updateRequired) {
+		this.updateRequired = updateRequired;
+	}
+
 	public void downloadNewXML() {
 		try {
 			filepath = System.getProperty("user.dir") + "/" + tipo + url.substring(url.lastIndexOf("/") + 1);
-			URLConnection conn = new URL(url).openConnection();
-			conn.connect();
-			System.out.println(conn.getContentType());
-			InputStream is = conn.getInputStream();
-			FileOutputStream fos = new FileOutputStream(new File(filepath));
-
-			byte[] array = new byte[1000];
-			int leido = is.read(array);
-			while (leido > 0) {
-				fos.write(array, 0, leido);
-				leido = is.read(array);
+			File archivoAnterior = new File(filepath);
+			if (!archivoAnterior.exists()) {
+				updateRequired = true;
+				sobreecribirXML();
+			} else {
+				String filepath2=filepath.split("\\.")[0]+"old.xml";
+				archivoAnterior.renameTo(new File(filepath2));
+				archivoAnterior = new File(filepath2);
+				File archivoNuevo = new File(filepath);
+				sobreecribirXML();
+				try {
+					updateRequired = !FileUtils.contentEquals(archivoNuevo, archivoAnterior);
+				} catch (IOException e) {
+				}
 			}
 
-			is.close();
-			fos.close();
 			this.doc = parseXML();
+			archivoAnterior.delete();
 			this.size = doc.getElementsByTagName("row").getLength();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	private void sobreecribirXML() throws IOException, MalformedURLException, FileNotFoundException {
+		URLConnection conn = new URL(url).openConnection();
+		conn.connect();
+		InputStream is = conn.getInputStream();
+		FileOutputStream fos = new FileOutputStream(new File(filepath));
+
+		byte[] array = new byte[1000];
+		int leido = is.read(array);
+		while (leido > 0) {
+			fos.write(array, 0, leido);
+			leido = is.read(array);
+		}
+
+		is.close();
+		fos.close();
 	}
 
 	private Node extractNodeFromXML(int idlist) {
@@ -113,21 +144,35 @@ public class XMLControler {
 			tipo = obtenerElement(eElement, "lodgingtype", 0);
 			descripcion = obtenerElement(eElement, "turismdescription", 1);
 			direccion = obtenerElement(eElement, "address", 0);
-			telefono = Integer.parseInt(obtenerElement(eElement, "phone", 0).replace(" ", ""));
+			try {
+				telefono = Integer.parseInt(obtenerElement(eElement, "phone", 0).replace(" ", ""));
+			} catch (NumberFormatException e) {
+				telefono = -1;
+			}
+
 			web = obtenerElement(eElement, "web", 0);
 			email = obtenerElement(eElement, "tourismemail", 0);
 			capacidad = Integer.parseInt(obtenerElement(eElement, "capacity", 0));
 			codPais = obtenerElement(eElement, "countrycode", 0);
 			codMunicipio = obtenerElement(eElement, "municipalitycode", 0);
 			codTerritorio = obtenerElement(eElement, "territorycode", 0);
-			codigoPostal=obtenerElement(eElement, "postalcode", 0);
-			marca=obtenerElement(eElement, "marks", 0);
-			latitud=Double.valueOf(obtenerElement(eElement, "latwgs84", 0));
-			longitud=Double.valueOf(obtenerElement(eElement, "lonwgs84", 0));
-
-			
-			Localizacion loc=new Localizacion(capacidad, codigoPostal, direccion, marca, latitud, longitud);
-			aloj=new Alojamiento(id, tipo, nombre, descripcion, telefono, web, email, capacidad,loc);
+			codigoPostal = obtenerElement(eElement, "postalcode", 0);
+			marca = obtenerElement(eElement, "marks", 0);
+			try {
+				latitud = Double.valueOf(obtenerElement(eElement, "latwgs84", 0));
+			} catch (NumberFormatException e) {
+				latitud = 0;
+			}
+			try {
+				longitud = Double.valueOf(obtenerElement(eElement, "lonwgs84", 0));
+			} catch (NumberFormatException e) {
+				longitud = 0;
+			}
+			Pais pais = session.get(Pais.class, codPais.toCharArray());
+			Municipio municipio = session.get(Municipio.class, codMunicipio.toCharArray());
+			Territorio territorio = session.get(Territorio.class, codTerritorio.toCharArray());
+			Localizacion loc = new Localizacion(pais, municipio, territorio, codigoPostal, direccion, marca, latitud, longitud);
+			aloj = new Alojamiento(tipo, nombre, descripcion, telefono, web, email, capacidad, loc);
 		}
 		return aloj;
 	}
