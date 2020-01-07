@@ -8,17 +8,14 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
 
+import org.hibernate.Session;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -29,12 +26,15 @@ import com.yuua.reto.entidades.Alojamiento;
 import com.yuua.reto.entidades.Localizacion;
 import com.yuua.reto.entidades.Municipio;
 import com.yuua.reto.entidades.Pais;
+import com.yuua.reto.entidades.Territorio;
 
 public class XMLControler {
 
 	public String url;
 	private String filepath;
 	private String tipo;
+	private int size;
+	Document doc;
 
 	public XMLControler(String url, String tipo) {
 		this.url = url;
@@ -44,13 +44,9 @@ public class XMLControler {
 	public void downloadNewXML() {
 		try {
 			filepath = System.getProperty("user.dir") + "/" + tipo + url.substring(url.lastIndexOf("/") + 1);
-
 			URLConnection conn = new URL(url).openConnection();
-
 			conn.connect();
-
 			System.out.println(conn.getContentType());
-
 			InputStream is = conn.getInputStream();
 			FileOutputStream fos = new FileOutputStream(new File(filepath));
 
@@ -63,22 +59,21 @@ public class XMLControler {
 
 			is.close();
 			fos.close();
+			this.doc = parseXML();
+			this.size = doc.getElementsByTagName("row").getLength();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
 	private Node extractNodeFromXML(int idlist) {
-		Document doc = parseXML();
 		NodeList nList = doc.getElementsByTagName("row");
 		Node nNode = nList.item(idlist);
 		return nNode;
 	}
 
 	public int getSize() {
-		Document doc = parseXML();
-		NodeList nList = doc.getElementsByTagName("row");
-		return nList.getLength();
+		return this.size;
 	}
 
 	private Document parseXML() {
@@ -102,13 +97,12 @@ public class XMLControler {
 		return doc;
 	}
 
-	public Alojamiento toAlojamientoById(int id) {
-		String nombre = "", descripcion = "", direccion = "", web = "", email = "", tipo = "", pais = "", municipio = "", territorio = "", codigoPostal = "", marca = "";
+	public Alojamiento toAlojamientoById(int id, Session session) {
+		String nombre = "", descripcion = "", direccion = "", web = "", email = "", tipo = "", codPais = "", codMunicipio = "", codTerritorio = "", codigoPostal = "", marca = "";
 		int telefono = -1, capacidad = -1;
 		double latitud, longitud;
 
 		Alojamiento aloj = null;
-		id--;
 		Node xmlNode = extractNodeFromXML(id);
 
 		if (xmlNode.getNodeType() == Node.ELEMENT_NODE) {
@@ -123,44 +117,58 @@ public class XMLControler {
 			web = obtenerElement(eElement, "web", 0);
 			email = obtenerElement(eElement, "tourismemail", 0);
 			capacidad = Integer.parseInt(obtenerElement(eElement, "capacity", 0));
+			codPais = obtenerElement(eElement, "countrycode", 0);
+			codMunicipio = obtenerElement(eElement, "municipalitycode", 0);
+			codTerritorio = obtenerElement(eElement, "territorycode", 0);
+			codigoPostal=obtenerElement(eElement, "postalcode", 0);
+			marca=obtenerElement(eElement, "marks", 0);
+			latitud=Double.valueOf(obtenerElement(eElement, "latwgs84", 0));
+			longitud=Double.valueOf(obtenerElement(eElement, "lonwgs84", 0));
 
-			System.out.println("Nombre: " + nombre);
-			System.out.println("Tipo: " + tipo);
-			System.out.println("Descripcion: " + descripcion);
-			System.out.println("Direccion: " + direccion);
-			System.out.println("Telefono: " + telefono);
-			System.out.println("Web: " + web);
-			System.out.println("Email: " + email);
-			System.out.println("Capacidad: " + capacidad);
-
-			// Localizacion loc = new Localizacion(id, null, municipio, territorio,
-			// codigoPostal, direccion, marca, latitud, longitud);
-			// aloj = new Alojamiento(id, tipo, nombre, descripcion, telefono, web, email,
-			// capacidad, null);
-
+			
+			Localizacion loc=new Localizacion(capacidad, codigoPostal, direccion, marca, latitud, longitud);
+			aloj=new Alojamiento(id, tipo, nombre, descripcion, telefono, web, email, capacidad,loc);
 		}
 		return aloj;
 	}
 
-	public ArrayList<Pais> buscarPaises() {
-		try {
-			ArrayList<Pais> paises = new ArrayList<Pais>();
-			Document doc = parseXML();
-			XPathFactory xpathfactory = XPathFactory.newInstance();
-			XPath xpath = xpathfactory.newXPath();
-			XPathExpression expr = xpath.compile("distinct-values(/*/row/country)");
-			Object result = expr.evaluate(doc, XPathConstants.NODESET);
-			NodeList nodosPaises = (NodeList) result;
-			expr = xpath.compile("distinct-values(/*/row/countrycode)");
-			result = expr.evaluate(doc, XPathConstants.NODESET);
-			NodeList codigoPaises = (NodeList) result;
-			for (int i = 0; i < nodosPaises.getLength(); i++) {
-				paises.add(new Pais(Integer.valueOf(codigoPaises.item(i).getTextContent()), nodosPaises.item(i).getTextContent()));
+	public ArrayList<Object> buscarElementos(String nombreCodigo, String nombreCampo, Class tipo) {
+		ArrayList<Object> elementos = new ArrayList<Object>();
+		Set<String> nombres = new HashSet<String>();
+		Set<String> codigos = new HashSet<String>();
+		for (int i = 0; i < this.size; i++) {
+			Node nodo = extractNodeFromXML(i);
+			if (nodo.getNodeType() == Node.ELEMENT_NODE) {
+				String nombre = obtenerElement((Element) nodo, nombreCampo, 0);
+				if (nombre.contains(" ")) {
+					String[] split = nombre.split(" ");
+					if (split[0].equals(split[1])) {
+						nombre = split[0];
+					}
+				}
+				nombres.add(nombre);
+				String codigo = obtenerElement((Element) nodo, nombreCodigo, 0);
+				if (codigo.contains(" ")) {
+					codigo = codigo.substring(0, codigo.indexOf(" "));
+				}
+				codigos.add(codigo);
 			}
-			return paises;
-		} catch (XPathExpressionException e) {
-			return null;
 		}
+		Iterator<String> it1 = codigos.iterator();
+		Iterator<String> it2 = nombres.iterator();
+
+		while (it1.hasNext() && it2.hasNext()) {
+			if (tipo == Pais.class) {
+				elementos.add(new Pais(it1.next().toCharArray(), it2.next()));
+			} else if (tipo == Territorio.class) {
+				elementos.add(new Territorio(it1.next().toCharArray(), it2.next()));
+			} else if (tipo == Municipio.class) {
+				elementos.add(new Municipio(it1.next().toCharArray(), it2.next()));
+			} else {
+				return null;
+			}
+		}
+		return elementos;
 	}
 
 	private String obtenerElement(Element eElement, String tagName, int itemIndex) {

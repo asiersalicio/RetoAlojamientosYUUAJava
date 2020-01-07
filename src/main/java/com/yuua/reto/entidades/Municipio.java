@@ -15,10 +15,10 @@ import javax.persistence.Table;
 public class Municipio {
 	@Id
 	@Column(name = "municipalitycode")
-	int id;
+	public char[] id;
 
 	@Column(name = "municipality")
-	String nombre;
+	public String nombre;
 
 	@OneToMany(mappedBy = "tmunicipio")
 	private Set<Localizacion> tlocalizacion;
@@ -26,11 +26,20 @@ public class Municipio {
 	public Municipio() {
 	}
 
-	public int getId() {
+	public Municipio(char[] id, String nombre) {
+		this.id = id;
+		this.nombre = nombre;
+	}
+	
+	public Municipio recrearMunicipio() {
+		return new Municipio(this.id, this.nombre);
+	}
+
+	public char[] getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(char[] id) {
 		this.id = id;
 	}
 

@@ -27,14 +27,16 @@ public class Alojamiento {
 	String email;
 	@Column(name = "capacity")
 	int capacidad;
-	// @OneToOne
-	// Localizacion localizacion;
+	
+	@OneToOne
+	Localizacion localizacion;
 
 	protected Alojamiento() {
 	}
 
-	public Alojamiento(int id, String tipo, String nombre, String descripcion, int telefono, String web, String email, int capacidad) {
-		super();
+	
+
+	public Alojamiento(int id, String tipo, String nombre, String descripcion, int telefono, String web, String email, int capacidad, Localizacion localizacion) {
 		this.id = id;
 		this.tipo = tipo;
 		this.nombre = nombre;
@@ -43,7 +45,10 @@ public class Alojamiento {
 		this.web = web;
 		this.email = email;
 		this.capacidad = capacidad;
+		this.localizacion = localizacion;
 	}
+
+
 
 	public int getCapacidad() {
 		return capacidad;
