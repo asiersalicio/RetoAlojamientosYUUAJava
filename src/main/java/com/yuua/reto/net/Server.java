@@ -1,8 +1,8 @@
 package com.yuua.reto.net;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -12,14 +12,15 @@ public class Server extends Thread{
 	public static int puerto = 55555;
 	private ServerSocket servidor;
 	private ArrayList<Socket> clientes;
-	private ObjectOutputStream salida;
-	private ObjectInputStream entrada;
+	private DataOutputStream salida;
+	private DataInputStream entrada;
 	
 	public Server() 
 	{
 		servidor = null;
 		try {
 			servidor = new ServerSocket(puerto);
+			clientes = new ArrayList<Socket>();
 			start();
 			
 			
@@ -45,17 +46,10 @@ public class Server extends Thread{
 		try {
 			clientes.add(servidor.accept());
 			System.out.println("Cliente conectado");
-			salida = new ObjectOutputStream(clientes.get(0).getOutputStream());
-			entrada = new ObjectInputStream(clientes.get(0).getInputStream());
-			while (true)
-			{
-				String orden=entrada.readUTF();
-				if(orden.equals("0"))
-				{
-					System.out.println("Recibido");
-				}
-			}
-			
+			salida = new DataOutputStream(clientes.get(0).getOutputStream());
+			entrada = new DataInputStream(clientes.get(0).getInputStream());
+			salida.writeUTF("ENVIADO DESDE EL SERVIDOR");
+			System.out.println("Enviado correctamente");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
