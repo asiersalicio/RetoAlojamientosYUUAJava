@@ -5,8 +5,6 @@ import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -30,13 +28,21 @@ public class Municipio {
 		this.id = id;
 		this.nombre = nombre;
 	}
-	
+
 	public Municipio recrearMunicipio() {
 		return new Municipio(this.id, this.nombre);
 	}
 
 	public char[] getId() {
 		return id;
+	}
+
+	public Set<Localizacion> getTlocalizacion() {
+		return tlocalizacion;
+	}
+
+	public void setTlocalizacion(Set<Localizacion> tlocalizacion) {
+		this.tlocalizacion = tlocalizacion;
 	}
 
 	public void setId(char[] id) {

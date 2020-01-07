@@ -7,6 +7,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.hibernate.Session;
@@ -14,6 +15,7 @@ import org.hibernate.Session;
 @Entity
 @Table(name = "tlocalizacion")
 public class Localizacion {
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "idLocalizacion")
@@ -43,9 +45,7 @@ public class Localizacion {
 
 	}
 
-	public Localizacion(int id, Pais tpais, Municipio tmunicipio, Territorio tterritorio, String codigoPostal, String direccion, String marca, Double latitud, Double longitud) {
-		super();
-		this.id = id;
+	public Localizacion(Pais tpais, Municipio tmunicipio, Territorio tterritorio, String codigoPostal, String direccion, String marca, Double latitud, Double longitud) {
 		this.tpais = tpais;
 		this.tmunicipio = tmunicipio;
 		this.tterritorio = tterritorio;
@@ -62,9 +62,8 @@ public class Localizacion {
 		this.tmunicipio=session.get(Municipio.class, idPais);
 	}
 
-	public Localizacion(int id, String codigoPostal, String direccion, String marca, Double latitud, Double longitud) {
+	public Localizacion(String codigoPostal, String direccion, String marca, Double latitud, Double longitud) {
 		super();
-		this.id = id;
 		this.codigoPostal = codigoPostal;
 		this.direccion = direccion;
 		this.marca = marca;

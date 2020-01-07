@@ -1,7 +1,10 @@
 package com.yuua.reto.entidades;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -12,12 +15,13 @@ public class Alojamiento {
 
 	@Id
 	@Column(name = "idAlojamiento")
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	int id;
 	@Column(name = "lodgingtype")
 	String tipo;
 	@Column(name = "documentname")
 	String nombre;
-	@Column(name = "turismdescription")
+	@Column(name = "turismdescription",length=6000,columnDefinition = "TEXT")
 	String descripcion;
 	@Column(name = "phone")
 	int telefono;
@@ -28,16 +32,13 @@ public class Alojamiento {
 	@Column(name = "capacity")
 	int capacidad;
 	
-	@OneToOne
+	@OneToOne(cascade = {CascadeType.ALL})
 	Localizacion localizacion;
 
 	protected Alojamiento() {
 	}
 
-	
-
-	public Alojamiento(int id, String tipo, String nombre, String descripcion, int telefono, String web, String email, int capacidad, Localizacion localizacion) {
-		this.id = id;
+	public Alojamiento(String tipo, String nombre, String descripcion, int telefono, String web, String email, int capacidad, Localizacion localizacion) {
 		this.tipo = tipo;
 		this.nombre = nombre;
 		this.descripcion = descripcion;
@@ -48,7 +49,7 @@ public class Alojamiento {
 		this.localizacion = localizacion;
 	}
 
-
+	
 
 	public int getCapacidad() {
 		return capacidad;

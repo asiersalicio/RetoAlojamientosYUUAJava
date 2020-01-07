@@ -23,14 +23,18 @@ public class App {
 		SessionFactory sf = conf.buildSessionFactory();
 		TransaccionesHibernate transacciones = new TransaccionesHibernate();
 
-		transacciones.insertarPaisesTerritoriosMunicipios(sf, xmlAlojamientos);
-		transacciones.insertarPaisesTerritoriosMunicipios(sf, xmlAlbergues);
-		transacciones.insertarPaisesTerritoriosMunicipios(sf, xmlCamping);
-		
-		transacciones.cargarAlojamientos(sf, xmlAlojamientos);
-		transacciones.cargarAlojamientos(sf, xmlAlbergues);
-		transacciones.cargarAlojamientos(sf, xmlCamping);
-
+		if (xmlAlojamientos.isUpdateRequired()) {
+			transacciones.insertarPaisesTerritoriosMunicipios(sf, xmlAlojamientos);
+			transacciones.cargarAlojamientos(sf, xmlAlojamientos);
+		}
+		if (xmlAlbergues.isUpdateRequired()) {
+			transacciones.insertarPaisesTerritoriosMunicipios(sf, xmlAlbergues);
+			transacciones.cargarAlojamientos(sf, xmlAlbergues);
+		}
+		if (xmlCamping.isUpdateRequired()) {
+			transacciones.insertarPaisesTerritoriosMunicipios(sf, xmlCamping);
+			transacciones.cargarAlojamientos(sf, xmlCamping);
+		}
 		sf.close();
 	}
 
