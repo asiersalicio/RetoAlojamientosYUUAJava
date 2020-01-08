@@ -8,6 +8,8 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.json.simple.JSONObject;
+
 @Entity
 @Table(name = "tpais")
 public class Pais {
@@ -32,10 +34,6 @@ public class Pais {
 		super();
 		this.id = id;
 		this.nombre = nombre;
-	}
-	
-	public Pais recrearPais() {
-		return new Pais(this.id, this.nombre);
 	}
 
 	public void setId(char[] id) {

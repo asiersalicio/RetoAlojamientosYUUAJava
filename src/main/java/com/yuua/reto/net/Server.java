@@ -5,16 +5,23 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+
+import com.yuua.reto.conexionbd.TransaccionesHibernate;
 
 public class Server implements Runnable {
 
 	private final int PUERTO = 55555;
 	public ServerSocket servidor = null;
+	public ArrayList<HCliente> conexiones;
 	public Socket cliente = null;
 	public ObjectInputStream entrada = null;
 	public ObjectOutputStream salida = null;
+	public TransaccionesHibernate transaccionesHibernate;
+	public ArrayList<String> usuarios;
 
-	public Server() {
+	public Server(TransaccionesHibernate transacciones) {
+		this.transaccionesHibernate=transacciones;
 	}
 
 	@Override
@@ -25,24 +32,18 @@ public class Server implements Runnable {
 		salida = null;
 		try {
 			servidor = new ServerSocket(PUERTO);
-
+			conexiones = new ArrayList<HCliente>();
 			while (true) {
 				System.out.println("Esperando conexiones del cliente...");
 				cliente = servidor.accept();
 				System.out.println("Conexion realizada");
 				salida = new ObjectOutputStream(cliente.getOutputStream());
 				entrada = new ObjectInputStream(cliente.getInputStream());
-				Request peticion = (Request) entrada.readObject();
-				
-				switch (peticion.getCodigoPeticion()) {
-				case 0:
-					System.out.println(peticion.getObjetoEnviado());
-					break;
-
-				default:
-					break;
-				}
-				cliente.close();
+	
+				HCliente hiloCliente = new HCliente(this);
+				Thread threadCliente = new Thread(hiloCliente);
+				threadCliente.start();
+				conexiones.add(hiloCliente);
 			}
 		} catch (IOException e) {
 			System.out.println("Error: " + e.getMessage());
@@ -68,32 +69,36 @@ public class Server implements Runnable {
 		}
 	}
 
-	/**
-	 * public static int puerto = 55555; private ServerSocket servidor; private
-	 * ArrayList<Socket> clientes; private DataOutputStream salida; private
-	 * DataInputStream entrada;
-	 * 
-	 * public Server() { servidor = null; try { servidor = new ServerSocket(puerto);
-	 * clientes = new ArrayList<Socket>();
-	 * 
-	 * 
-	 * } catch (IOException e) { System.out.println("Error: " + e.getMessage()); } }
-	 * 
-	 * public void esperarAccionesUsuario() { try { entrada.readUTF(); } catch
-	 * (IOException e) { // TODO Auto-generated catch block e.printStackTrace(); } }
-	 * 
-	 * @Override public void run() {
-	 * 
-	 *           System.out.println("Esperando conexiones del cliente..."); try {
-	 *           clientes.add(servidor.accept()); System.out.println("Cliente
-	 *           conectado"); salida = new
-	 *           DataOutputStream(clientes.get(0).getOutputStream()); entrada = new
-	 *           DataInputStream(clientes.get(0).getInputStream());
-	 *           salida.writeUTF("ENVIADO DESDE EL SERVIDOR");
-	 *           System.out.println("Enviado correctamente"); } catch (IOException
-	 *           e) { // TODO Auto-generated catch block e.printStackTrace(); }
-	 * 
-	 *           }
-	 **/
+	public void mandarRequest(Request peticion, ObjectOutputStream salida) {
+		try {
+			salida.writeObject(peticion);
+		} catch (IOException e) {
+		}
+	}
 
+	public void broadcast(Request req) {
+		if (conexiones.size() > 0) {
+			for (HCliente hilo : conexiones) {
+				hilo.mandarPeticion(req);
+			}
+		}
+	}
+
+	public void borrarHilo(HCliente hiloCliente) {
+		HCliente hilo = null;
+		for (int i = 0; i < conexiones.size(); i++) {
+			if (conexiones.get(i).equals(hiloCliente)) {
+				hilo = conexiones.get(i);
+			}
+		}
+		if (hilo != null) {
+			conexiones.remove(hilo);
+		}
+	}
+
+	public void apagarServidor() {
+		for (int i = 0; i < conexiones.size(); i++) {
+			mandarRequest(new Request(0, null), conexiones.get(i).salida);
+		}
+	}
 }

@@ -21,19 +21,19 @@ public class App {
 
 		Configuration conf = new Configuration().configure(new File("src/main/java/hibernate.cfg.xml"));
 		SessionFactory sf = conf.buildSessionFactory();
-		TransaccionesHibernate transacciones = new TransaccionesHibernate();
+		TransaccionesHibernate transacciones = new TransaccionesHibernate(sf);
 
 		if (xmlAlojamientos.isUpdateRequired()) {
-			transacciones.insertarPaisesTerritoriosMunicipios(sf, xmlAlojamientos);
-			transacciones.cargarAlojamientos(sf, xmlAlojamientos);
+			transacciones.insertarPaisesTerritoriosMunicipios(xmlAlojamientos);
+			transacciones.cargarAlojamientos(xmlAlojamientos);
 		}
 		if (xmlAlbergues.isUpdateRequired()) {
-			transacciones.insertarPaisesTerritoriosMunicipios(sf, xmlAlbergues);
-			transacciones.cargarAlojamientos(sf, xmlAlbergues);
+			transacciones.insertarPaisesTerritoriosMunicipios(xmlAlbergues);
+			transacciones.cargarAlojamientos(xmlAlbergues);
 		}
 		if (xmlCamping.isUpdateRequired()) {
-			transacciones.insertarPaisesTerritoriosMunicipios(sf, xmlCamping);
-			transacciones.cargarAlojamientos(sf, xmlCamping);
+			transacciones.insertarPaisesTerritoriosMunicipios(xmlCamping);
+			transacciones.cargarAlojamientos(xmlCamping);
 		}
 		sf.close();
 	}

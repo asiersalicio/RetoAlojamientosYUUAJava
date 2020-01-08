@@ -1,8 +1,13 @@
 package com.yuua.reto.conexionbd;
 
+import java.io.Serializable;
+import java.util.List;
+
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
+import com.yuua.reto.entidades.Alojamiento;
 import com.yuua.reto.entidades.Municipio;
 import com.yuua.reto.entidades.Pais;
 import com.yuua.reto.entidades.Territorio;
@@ -10,9 +15,17 @@ import com.yuua.reto.xml.XMLControler;
 
 public class TransaccionesHibernate {
 
-	public void insertarPaisesTerritoriosMunicipios(SessionFactory sf, XMLControler controlador) {
-		Session session = sf.openSession();
+	private SessionFactory factory = null;
+
+	public TransaccionesHibernate(SessionFactory factory) {
+		super();
+		this.factory = factory;
+	}
+
+	public void insertarPaisesTerritoriosMunicipios(XMLControler controlador) {
+		Session session = factory.openSession();
 		session.beginTransaction();
+
 		for (Object pais : controlador.buscarElementos("countrycode", "country", Pais.class)) {
 			if (session.get(Pais.class, ((Pais) pais).getId()) == null) {
 				session.saveOrUpdate(pais);
@@ -35,14 +48,26 @@ public class TransaccionesHibernate {
 		session.close();
 	}
 
-	public void cargarAlojamientos(SessionFactory sf, XMLControler controlador) {
-		Session session = sf.openSession();
+	public void cargarAlojamientos(XMLControler controlador) {
+		Session session = factory.openSession();
 		session.beginTransaction();
 		for (int i = 0; i < controlador.getSize(); i++) {
-			session.save(controlador.toAlojamientoById(i, session));
+			Alojamiento aloj = controlador.toAlojamientoById(i, session);
+			Alojamiento alojbd = (Alojamiento) session.createQuery("FROM Alojamiento WHERE nombre = '"+aloj.getNombre()+"'").uniqueResult();			
+			
+			if (alojbd == null) {
+				session.saveOrUpdate(aloj);
+			}
 		}
 		session.getTransaction().commit();
 		session.clear();
 		session.close();
+	}
+
+	@SuppressWarnings("unchecked")
+	public Object consultarObjeto(@SuppressWarnings("rawtypes") Class clase, Object id) {
+		Session session = factory.openSession();
+		Object objeto = session.get(clase, (Serializable) id);
+		return objeto;
 	}
 }

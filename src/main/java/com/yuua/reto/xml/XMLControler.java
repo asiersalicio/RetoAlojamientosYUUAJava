@@ -68,12 +68,13 @@ public class XMLControler {
 				sobreecribirXML();
 				try {
 					updateRequired = !FileUtils.contentEquals(archivoNuevo, archivoAnterior);
+					archivoAnterior.delete();
 				} catch (IOException e) {
 				}
 			}
 
 			this.doc = parseXML();
-			archivoAnterior.delete();
+			
 			this.size = doc.getElementsByTagName("row").getLength();
 		} catch (Exception e) {
 			e.printStackTrace();

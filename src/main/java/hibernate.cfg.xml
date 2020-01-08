@@ -16,7 +16,6 @@
         <mapping class="com.yuua.reto.entidades.Municipio"></mapping>
         <mapping class="com.yuua.reto.entidades.Territorio"></mapping>
         <mapping class="com.yuua.reto.entidades.Pais"></mapping>
-        <mapping class="com.yuua.reto.conexionbd.Manzana"></mapping>
-        
+        <mapping class="com.yuua.reto.conexionbd.Manzana"></mapping>        
     </session-factory>
 </hibernate-configuration>
