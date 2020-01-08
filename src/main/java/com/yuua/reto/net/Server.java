@@ -8,7 +8,7 @@ import java.net.Socket;
 
 public class Server implements Runnable {
 
-	private final int PUERTO = 5000;
+	private final int PUERTO = 55555;
 	public ServerSocket servidor = null;
 	public Socket cliente = null;
 	public ObjectInputStream entrada = null;
@@ -33,6 +33,7 @@ public class Server implements Runnable {
 				salida = new ObjectOutputStream(cliente.getOutputStream());
 				entrada = new ObjectInputStream(cliente.getInputStream());
 				Request peticion = (Request) entrada.readObject();
+				
 				switch (peticion.getCodigoPeticion()) {
 				case 0:
 					System.out.println(peticion.getObjetoEnviado());
@@ -45,8 +46,10 @@ public class Server implements Runnable {
 			}
 		} catch (IOException e) {
 			System.out.println("Error: " + e.getMessage());
+			e.printStackTrace();
 		} catch (Exception e) {
 			System.out.println("Error: " + e.getMessage());
+			e.printStackTrace();
 		} finally {
 			try {
 				if (servidor != null)

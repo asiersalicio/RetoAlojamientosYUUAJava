@@ -44,5 +44,12 @@
 			<artifactId>commons-io</artifactId>
 			<version>2.6</version>
 		</dependency>
+		<dependency>
+			<groupId>com.yuua.request</groupId>
+			<artifactId>request</artifactId>
+			<version>0.1</version>
+			<scope>system</scope>
+			<systemPath>${basedir}/libs/request_v01.jar</systemPath>
+		</dependency>
 	</dependencies>
 </project>
