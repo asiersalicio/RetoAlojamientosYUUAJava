@@ -1,6 +1,7 @@
 package com.yuua.reto.conexionbd;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Query;
@@ -53,8 +54,8 @@ public class TransaccionesHibernate {
 		session.beginTransaction();
 		for (int i = 0; i < controlador.getSize(); i++) {
 			Alojamiento aloj = controlador.toAlojamientoById(i, session);
-			Alojamiento alojbd = (Alojamiento) session.createQuery("FROM Alojamiento WHERE nombre = '"+aloj.getNombre()+"'").uniqueResult();			
-			
+			Alojamiento alojbd = (Alojamiento) session.createQuery("FROM Alojamiento WHERE nombre = '" + aloj.getNombre() + "'").uniqueResult();
+
 			if (alojbd == null) {
 				session.saveOrUpdate(aloj);
 			}
@@ -64,10 +65,51 @@ public class TransaccionesHibernate {
 		session.close();
 	}
 
+	/**
+	 * Consultar un unico objeto por id
+	 * @param clase la clase del objeto que quieres buscar 
+	 * @param id el id del objeto buscado, debe ser el mismo tipo (char[], string, int, etc...)
+	 * @return un unico objeto de la clase especificada
+	 */
 	@SuppressWarnings("unchecked")
-	public Object consultarObjeto(@SuppressWarnings("rawtypes") Class clase, Object id) {
+	public Object consultarById(@SuppressWarnings("rawtypes") Class clase, Serializable id) {
 		Session session = factory.openSession();
-		Object objeto = session.get(clase, (Serializable) id);
+		Object objeto = null;
+		try {
+			objeto = session.get(clase, id);
+		} catch (Exception e) {
+			return null;
+		}
 		return objeto;
 	}
+
+	
+	/**
+	 * Metodo para buscar elementos en la base de datos por campos
+	 * @param clase La clase del objeto que quieres buscar, debe estar mapeado en hibernate
+	 * @param campos los campos por los cuales se realiza la busqueda 
+	 * @param condiciones la condiciones que se deben cumplir con los campos, estos dos arrays deben de tener la misma longitud, de lo contrario devuelve null
+	 * @return una lista de todos los objetos encontrados
+	 * Ex: consultarVariosObjetos(Alojamiento.class, new String[]{"nombre","telefono"}, new String[]{"A ROOM IN THE CITY","943424589"});
+	 * Res: los alojamientos con nombre "A ROOM IN THE CITY" y telefono "943424589"
+	 */
+	public Object[] consultarVariosObjetos(@SuppressWarnings("rawtypes") Class clase, String[] campos, String[] condiciones) {
+		if (campos.length == condiciones.length) {
+			Session session = factory.openSession();
+			Object[] objetos = null;
+			String query = "FROM " + clase.getSimpleName() + " WHERE ";
+			for (int i = 0; i < condiciones.length; i++) {
+				query += campos[i] + " = '" + condiciones[i] + "'";
+				if (i < condiciones.length - 1) {
+					query += " AND ";
+				}
+			}
+			session.beginTransaction();
+			objetos = session.createQuery(query).getResultList().toArray();
+			return objetos;
+		} else {
+			return null;
+		}
+	}
+
 }
