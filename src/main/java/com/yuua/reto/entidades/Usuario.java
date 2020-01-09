@@ -7,6 +7,8 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.sun.istack.NotNull;
+
 @Entity
 @Table(name = "usuario")
 public class Usuario {
@@ -20,9 +22,10 @@ public class Usuario {
 	private String apellidos;
 	@Column(name = "tipoUsuario")
 	private String tipoUsuario;
-	@Column(name = "nombreUsuario")
+	@Column(name = "nombreUsuario", nullable = false)
 	private String nombreUsuario;
-	@Column(name = "contrasena")
+	@NotNull
+	@Column(name = "contrasena", nullable = false)
 	private String contrasena;
 	@Column(name = "fechaNacimiento")
 	private Date fechaNacimiento;

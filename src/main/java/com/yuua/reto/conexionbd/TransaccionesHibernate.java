@@ -54,7 +54,7 @@ public class TransaccionesHibernate {
 		session.beginTransaction();
 		for (int i = 0; i < controlador.getSize(); i++) {
 			Alojamiento aloj = controlador.toAlojamientoById(i, session);
-			Alojamiento alojbd = (Alojamiento) session.createQuery("FROM Alojamiento WHERE nombre = '" + aloj.getNombre() + "'").uniqueResult();
+			Alojamiento alojbd = (Alojamiento) session.createQuery("FROM Alojamiento WHERE nombre = '" + aloj.getNombre() + "' AND descripcion='"+aloj.getDescripcion()+"'").uniqueResult();
 
 			if (alojbd == null) {
 				session.saveOrUpdate(aloj);

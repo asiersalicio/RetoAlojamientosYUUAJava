@@ -34,8 +34,6 @@ public class Localizacion {
 	String codigoPostal;
 	@Column(name = "address")
 	String direccion;
-	@Column(name = "marks")
-	String marca;
 	@Column(name = "latwgs84")
 	Double latitud;
 	@Column(name = "lonwgs84")
@@ -51,7 +49,6 @@ public class Localizacion {
 		this.tterritorio = tterritorio;
 		this.codigoPostal = codigoPostal;
 		this.direccion = direccion;
-		this.marca = marca;
 		this.latitud = latitud;
 		this.longitud = longitud;
 	}
