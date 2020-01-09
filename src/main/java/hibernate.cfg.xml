@@ -9,13 +9,13 @@
         <property name="hibernate.connection.url">jdbc:mysql://192.168.101.21/retoalojamientos</property>
         <property name="hibernate.connection.username">retoaloj</property>
         <property name="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</property>
-        <property name="hibernate.hbm2ddl.auto">update</property>
+        <property name="hibernate.hbm2ddl.auto">create</property>
         <property name="show_sql">true</property>
         <mapping class="com.yuua.reto.entidades.Localizacion"></mapping>
         <mapping class="com.yuua.reto.entidades.Alojamiento"></mapping>
         <mapping class="com.yuua.reto.entidades.Municipio"></mapping>
         <mapping class="com.yuua.reto.entidades.Territorio"></mapping>
         <mapping class="com.yuua.reto.entidades.Pais"></mapping>
-        <mapping class="com.yuua.reto.conexionbd.Manzana"></mapping>        
+        <mapping class="com.yuua.reto.entidades.Usuario"></mapping>        
     </session-factory>
 </hibernate-configuration>
