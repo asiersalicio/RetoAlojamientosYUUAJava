@@ -10,8 +10,8 @@ public class Request implements Serializable {
 	/**
 	 * Guia de codigos - Servidor
 	 * 0- Matar hilo 
-	 * 
-	 * 
+	 * 50 - Consultar por id
+	 * 60 - Consultar por consulta
 	 * 
 	 * 
 	 * Guia de codigos - Cliente

@@ -17,7 +17,7 @@ public class MainPruebas {
 		TransaccionesHibernate transacciones = new TransaccionesHibernate(sf);
 		
 		
-		transacciones.consultarVariosObjetos(Alojamiento.class, new String[]{"nombre","telefono"}, new String[]{"A ROOM IN THE CITY","943424589"});
+		transacciones.consultarVariosObjetos(Alojamiento.class.getSimpleName(), new String[]{}, new String[]{});
 		transacciones.consultarById(Alojamiento.class, 1);
 		Server servidor = new Server(transacciones);
 		Thread hiloserver = new Thread(servidor);

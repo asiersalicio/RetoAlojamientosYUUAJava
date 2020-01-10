@@ -70,6 +70,7 @@ public class TransaccionesHibernate {
 	 * @param clase la clase del objeto que quieres buscar 
 	 * @param id el id del objeto buscado, debe ser el mismo tipo (char[], string, int, etc...)
 	 * @return un unico objeto de la clase especificada
+	 * Codigo: 50
 	 */
 	@SuppressWarnings("unchecked")
 	public Object consultarById(@SuppressWarnings("rawtypes") Class clase, Serializable id) {
@@ -92,20 +93,26 @@ public class TransaccionesHibernate {
 	 * @return una lista de todos los objetos encontrados
 	 * Ex: consultarVariosObjetos(Alojamiento.class, new String[]{"nombre","telefono"}, new String[]{"A ROOM IN THE CITY","943424589"});
 	 * Res: los alojamientos con nombre "A ROOM IN THE CITY" y telefono "943424589"
+	 * Codigo:60
 	 */
-	public Object[] consultarVariosObjetos(@SuppressWarnings("rawtypes") Class clase, String[] campos, String[] condiciones) {
+	public Object[] consultarVariosObjetos(@SuppressWarnings("rawtypes") String clase, String[] campos, String[] condiciones) {
 		if (campos.length == condiciones.length) {
 			Session session = factory.openSession();
 			Object[] objetos = null;
-			String query = "FROM " + clase.getSimpleName() + " WHERE ";
+			String query = "FROM " + clase;
 			for (int i = 0; i < condiciones.length; i++) {
+				if(condiciones.length>0) {
+					query+=" WHERE ";
+				}
 				query += campos[i] + " = '" + condiciones[i] + "'";
 				if (i < condiciones.length - 1) {
 					query += " AND ";
 				}
 			}
 			session.beginTransaction();
-			objetos = session.createQuery(query).getResultList().toArray();
+			org.hibernate.query.Query<?> queryHbn= session.createQuery(query);
+			queryHbn.setMaxResults(20);
+			objetos = queryHbn.getResultList().toArray();
 			return objetos;
 		} else {
 			return null;

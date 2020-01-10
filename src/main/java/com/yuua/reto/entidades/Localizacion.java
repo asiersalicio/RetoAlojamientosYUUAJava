@@ -7,7 +7,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.hibernate.Session;
@@ -43,7 +42,7 @@ public class Localizacion {
 
 	}
 
-	public Localizacion(Pais tpais, Municipio tmunicipio, Territorio tterritorio, String codigoPostal, String direccion, String marca, Double latitud, Double longitud) {
+	public Localizacion(Pais tpais, Municipio tmunicipio, Territorio tterritorio, String codigoPostal, String direccion, Double latitud, Double longitud) {
 		this.tpais = tpais;
 		this.tmunicipio = tmunicipio;
 		this.tterritorio = tterritorio;
@@ -59,11 +58,10 @@ public class Localizacion {
 		this.tmunicipio=session.get(Municipio.class, idPais);
 	}
 
-	public Localizacion(String codigoPostal, String direccion, String marca, Double latitud, Double longitud) {
+	public Localizacion(String codigoPostal, String direccion, Double latitud, Double longitud) {
 		super();
 		this.codigoPostal = codigoPostal;
 		this.direccion = direccion;
-		this.marca = marca;
 		this.latitud = latitud;
 		this.longitud = longitud;
 	}
@@ -115,15 +113,6 @@ public class Localizacion {
 	public void setDireccion(String direccion) {
 		this.direccion = direccion;
 	}
-
-	public String getMarca() {
-		return marca;
-	}
-
-	public void setMarca(String marca) {
-		this.marca = marca;
-	}
-
 	public Double getLatitud() {
 		return latitud;
 	}

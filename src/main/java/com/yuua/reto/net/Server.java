@@ -40,7 +40,7 @@ public class Server implements Runnable {
 				salida = new ObjectOutputStream(cliente.getOutputStream());
 				entrada = new ObjectInputStream(cliente.getInputStream());
 	
-				HCliente hiloCliente = new HCliente(this);
+				HCliente hiloCliente = new HCliente(this,this.transaccionesHibernate);
 				Thread threadCliente = new Thread(hiloCliente);
 				threadCliente.start();
 				conexiones.add(hiloCliente);
@@ -75,6 +75,7 @@ public class Server implements Runnable {
 		} catch (IOException e) {
 		}
 	}
+	
 
 	public void broadcast(Request req) {
 		if (conexiones.size() > 0) {

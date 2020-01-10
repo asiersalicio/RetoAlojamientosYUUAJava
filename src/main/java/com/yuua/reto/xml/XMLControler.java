@@ -172,7 +172,7 @@ public class XMLControler {
 			Pais pais = session.get(Pais.class, codPais.toCharArray());
 			Municipio municipio = session.get(Municipio.class, codMunicipio.toCharArray());
 			Territorio territorio = session.get(Territorio.class, codTerritorio.toCharArray());
-			Localizacion loc = new Localizacion(pais, municipio, territorio, codigoPostal, direccion, marca, latitud, longitud);
+			Localizacion loc = new Localizacion(pais, municipio, territorio, codigoPostal, direccion, latitud, longitud);
 			aloj = new Alojamiento(tipo, nombre, descripcion, telefono, web, email, capacidad, loc);
 		}
 		return aloj;
