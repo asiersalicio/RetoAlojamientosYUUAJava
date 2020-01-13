@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.UnknownServiceException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -17,19 +18,21 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.commons.io.FileUtils;
 import org.hibernate.Session;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import org.apache.commons.io.FileUtils;
 
 import com.yuua.reto.entidades.Alojamiento;
 import com.yuua.reto.entidades.Localizacion;
 import com.yuua.reto.entidades.Municipio;
 import com.yuua.reto.entidades.Pais;
 import com.yuua.reto.entidades.Territorio;
+
+import logs.Logger;
 
 public class XMLControler {
 
@@ -54,48 +57,57 @@ public class XMLControler {
 	}
 
 	public void downloadNewXML() {
-		try {
-			filepath = System.getProperty("user.dir") + "/" + tipo + url.substring(url.lastIndexOf("/") + 1);
-			File archivoAnterior = new File(filepath);
-			if (!archivoAnterior.exists()) {
-				updateRequired = true;
-				sobreecribirXML();
-			} else {
-				String filepath2=filepath.split("\\.")[0]+"old.xml";
-				archivoAnterior.renameTo(new File(filepath2));
-				archivoAnterior = new File(filepath2);
-				File archivoNuevo = new File(filepath);
-				sobreecribirXML();
-				try {
-					updateRequired = !FileUtils.contentEquals(archivoNuevo, archivoAnterior);
-					archivoAnterior.delete();
-				} catch (IOException e) {
-				}
+		filepath = System.getProperty("user.dir") + "/" + tipo + url.substring(url.lastIndexOf("/") + 1);
+		File archivoAnterior = new File(filepath);
+		if (!archivoAnterior.exists()) {
+			updateRequired = true;
+			sobreecribirXML();
+		} else {
+			String filepath2 = filepath.split("\\.")[0] + "old.xml";
+			archivoAnterior.renameTo(new File(filepath2));
+			archivoAnterior = new File(filepath2);
+			File archivoNuevo = new File(filepath);
+			sobreecribirXML();
+			try {
+				updateRequired = !FileUtils.contentEquals(archivoNuevo, archivoAnterior);
+				archivoAnterior.delete();
+			} catch (IOException e) {
+				Logger.getInstance().loggear("No se ha podido leer los archivos - 75", this.getClass(), 5);
 			}
-
-			this.doc = parseXML();
-			
-			this.size = doc.getElementsByTagName("row").getLength();
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
+		this.doc = parseXML();
+		this.size = doc.getElementsByTagName("row").getLength();
 	}
 
-	private void sobreecribirXML() throws IOException, MalformedURLException, FileNotFoundException {
-		URLConnection conn = new URL(url).openConnection();
-		conn.connect();
-		InputStream is = conn.getInputStream();
-		FileOutputStream fos = new FileOutputStream(new File(filepath));
+	private void sobreecribirXML() {
 
-		byte[] array = new byte[1000];
-		int leido = is.read(array);
-		while (leido > 0) {
-			fos.write(array, 0, leido);
-			leido = is.read(array);
+		URLConnection conn;
+		try {
+			conn = new URL(url).openConnection();
+			conn.connect();
+			InputStream is = conn.getInputStream();
+			FileOutputStream fos = new FileOutputStream(new File(filepath));
+
+			byte[] array = new byte[1000];
+			int leido = is.read(array);
+			while (leido > 0) {
+				fos.write(array, 0, leido);
+				leido = is.read(array);
+			}
+
+			is.close();
+			fos.close();
+		} catch (MalformedURLException e) {
+			Logger.getInstance().loggear("Url Invalida", this.getClass(), 3);
+		}catch (FileNotFoundException e) {
+			Logger.getInstance().loggear("Archivo no encontrado", this.getClass(), 5);
+		}catch (UnknownServiceException e) {
+			Logger.getInstance().loggear("La pagina no puede transmitir la informacion", this.getClass(), 1);
+		}catch (SecurityException e) {
+			Logger.getInstance().loggear("Permiso de escritura denegado", this.getClass(), 4);
+		}catch (IOException e) {
+			Logger.getInstance().loggear("No se ha podido leer/abrir el archivo", this.getClass(), 5);
 		}
-
-		is.close();
-		fos.close();
 	}
 
 	private Node extractNodeFromXML(int idlist) {
@@ -130,7 +142,7 @@ public class XMLControler {
 	}
 
 	public Alojamiento toAlojamientoById(int id, Session session) {
-		String nombre = "", descripcion = "", direccion = "", web = "", email = "", tipo = "", codPais = "", codMunicipio = "", codTerritorio = "", codigoPostal = "", marca = "";
+		String nombre = "", descripcion = "", direccion = "", web = "", email = "", tipo = "", codPais = "", codMunicipio = "", codTerritorio = "", codigoPostal = "";
 		int telefono = -1, capacidad = -1;
 		double latitud, longitud;
 
@@ -147,7 +159,7 @@ public class XMLControler {
 			direccion = obtenerElement(eElement, "address", 0);
 			try {
 				telefono = Integer.parseInt(obtenerElement(eElement, "phone", 0).replace(" ", ""));
-			} catch (NumberFormatException e) {
+			} catch (NumberFormatException | NullPointerException f) {
 				telefono = -1;
 			}
 
@@ -158,15 +170,14 @@ public class XMLControler {
 			codMunicipio = obtenerElement(eElement, "municipalitycode", 0);
 			codTerritorio = obtenerElement(eElement, "territorycode", 0);
 			codigoPostal = obtenerElement(eElement, "postalcode", 0);
-			marca = obtenerElement(eElement, "marks", 0);
 			try {
 				latitud = Double.valueOf(obtenerElement(eElement, "latwgs84", 0));
-			} catch (NumberFormatException e) {
+			} catch (NumberFormatException | NullPointerException e) {
 				latitud = 0;
 			}
 			try {
 				longitud = Double.valueOf(obtenerElement(eElement, "lonwgs84", 0));
-			} catch (NumberFormatException e) {
+			} catch (NumberFormatException | NullPointerException e) {
 				longitud = 0;
 			}
 			Pais pais = session.get(Pais.class, codPais.toCharArray());
@@ -178,7 +189,7 @@ public class XMLControler {
 		return aloj;
 	}
 
-	public ArrayList<Object> buscarElementos(String nombreCodigo, String nombreCampo, Class tipo) {
+	public ArrayList<Object> buscarElementos(String nombreCodigo, String nombreCampo, Class<?> tipo) {
 		ArrayList<Object> elementos = new ArrayList<Object>();
 		Set<String> nombres = new HashSet<String>();
 		Set<String> codigos = new HashSet<String>();
@@ -222,7 +233,7 @@ public class XMLControler {
 		if (node != null) {
 			return Utilidades.quitarFormateo(node.getTextContent());
 		}
-		return "";
+		return null;
 	}
 
 }

@@ -1,10 +1,7 @@
 package com.yuua.reto.conexionbd;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
-import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
@@ -54,8 +51,7 @@ public class TransaccionesHibernate {
 		session.beginTransaction();
 		for (int i = 0; i < controlador.getSize(); i++) {
 			Alojamiento aloj = controlador.toAlojamientoById(i, session);
-			Alojamiento alojbd = (Alojamiento) session.createQuery("FROM Alojamiento WHERE nombre = '" + aloj.getNombre() + "' AND descripcion='"+aloj.getDescripcion()+"'").uniqueResult();
-
+			Alojamiento alojbd = (Alojamiento) session.createQuery("FROM Alojamiento WHERE nombre = '" + aloj.getNombre() + "' AND descripcion='" + aloj.getDescripcion() + "'").uniqueResult();
 			if (alojbd == null) {
 				session.saveOrUpdate(aloj);
 			}
@@ -67,42 +63,43 @@ public class TransaccionesHibernate {
 
 	/**
 	 * Consultar un unico objeto por id
-	 * @param clase la clase del objeto que quieres buscar 
-	 * @param id el id del objeto buscado, debe ser el mismo tipo (char[], string, int, etc...)
-	 * @return un unico objeto de la clase especificada
-	 * Codigo: 50
+	 * 
+	 * @param clase la clase del objeto que quieres buscar
+	 * @param id    el id del objeto buscado, debe ser el mismo tipo (char[],
+	 *              string, int, etc...)
+	 * @return un unico objeto de la clase especificada Codigo: 50
 	 */
-	@SuppressWarnings("unchecked")
-	public Object consultarById(@SuppressWarnings("rawtypes") Class clase, Serializable id) {
+
+	public Object consultarById(Class<?> clase, Serializable id) {
 		Session session = factory.openSession();
 		Object objeto = null;
-		try {
-			objeto = session.get(clase, id);
-		} catch (Exception e) {
-			return null;
-		}
+		objeto = session.get(clase, id);
 		return objeto;
 	}
 
-	
 	/**
 	 * Metodo para buscar elementos en la base de datos por campos
-	 * @param clase La clase del objeto que quieres buscar, debe estar mapeado en hibernate
-	 * @param campos los campos por los cuales se realiza la busqueda 
-	 * @param condiciones la condiciones que se deben cumplir con los campos, estos dos arrays deben de tener la misma longitud, de lo contrario devuelve null
-	 * @return una lista de todos los objetos encontrados
-	 * Ex: consultarVariosObjetos(Alojamiento.class, new String[]{"nombre","telefono"}, new String[]{"A ROOM IN THE CITY","943424589"});
-	 * Res: los alojamientos con nombre "A ROOM IN THE CITY" y telefono "943424589"
-	 * Codigo:60
+	 * 
+	 * @param clase       La clase del objeto que quieres buscar, debe estar mapeado
+	 *                    en hibernate
+	 * @param campos      los campos por los cuales se realiza la busqueda
+	 * @param condiciones la condiciones que se deben cumplir con los campos, estos
+	 *                    dos arrays deben de tener la misma longitud, de lo
+	 *                    contrario devuelve null
+	 * @return una lista de todos los objetos encontrados Ex:
+	 *         consultarVariosObjetos(Alojamiento.class, new
+	 *         String[]{"nombre","telefono"}, new String[]{"A ROOM IN THE
+	 *         CITY","943424589"}); Res: los alojamientos con nombre "A ROOM IN THE
+	 *         CITY" y telefono "943424589" Codigo:60
 	 */
-	public Object[] consultarVariosObjetos(@SuppressWarnings("rawtypes") String clase, String[] campos, String[] condiciones) {
+	public Object[] consultarVariosObjetos(String clase, String[] campos, String[] condiciones) {
 		if (campos.length == condiciones.length) {
 			Session session = factory.openSession();
 			Object[] objetos = null;
 			String query = "FROM " + clase;
 			for (int i = 0; i < condiciones.length; i++) {
-				if(condiciones.length>0) {
-					query+=" WHERE ";
+				if (condiciones.length > 0) {
+					query += " WHERE ";
 				}
 				query += campos[i] + " = '" + condiciones[i] + "'";
 				if (i < condiciones.length - 1) {
@@ -110,7 +107,7 @@ public class TransaccionesHibernate {
 				}
 			}
 			session.beginTransaction();
-			org.hibernate.query.Query<?> queryHbn= session.createQuery(query);
+			org.hibernate.query.Query<?> queryHbn = session.createQuery(query);
 			queryHbn.setMaxResults(20);
 			objetos = queryHbn.getResultList().toArray();
 			return objetos;

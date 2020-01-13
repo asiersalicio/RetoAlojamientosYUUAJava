@@ -8,8 +8,6 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import org.json.simple.JSONObject;
-
 @Entity
 @Table(name = "tpais")
 public class Pais {
@@ -20,7 +18,8 @@ public class Pais {
 	public String nombre;
 
 	@OneToMany(mappedBy = "tpais")
-	private Set<Localizacion> tlocalizacion;
+	
+	private transient Set<Localizacion> tlocalizacion;
 
 	public Pais() {
 

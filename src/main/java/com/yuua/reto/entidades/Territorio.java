@@ -19,7 +19,7 @@ public class Territorio {
 	public String nombre;
 
 	@OneToMany(mappedBy = "tterritorio")
-	private Set<Localizacion> tlocalizacion;
+	private transient Set<Localizacion> tlocalizacion;
 
 	public Territorio() {
 

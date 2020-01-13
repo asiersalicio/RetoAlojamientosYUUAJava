@@ -19,7 +19,8 @@ public class Municipio {
 	public String nombre;
 
 	@OneToMany(mappedBy = "tmunicipio")
-	private Set<Localizacion> tlocalizacion;
+	
+	private transient Set<Localizacion> tlocalizacion;
 
 	public Municipio() {
 	}

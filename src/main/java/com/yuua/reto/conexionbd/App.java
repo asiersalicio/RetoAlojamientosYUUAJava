@@ -5,6 +5,7 @@ import java.io.File;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
 
+import com.yuua.reto.net.Server;
 import com.yuua.reto.xml.XMLControler;
 
 public class App {
@@ -36,6 +37,10 @@ public class App {
 			transacciones.cargarAlojamientos(xmlCamping);
 		}
 		sf.close();
+		
+		Server servidor = new Server(transacciones);
+		Thread hiloserver = new Thread(servidor);
+		hiloserver.start();
 	}
 
 }
