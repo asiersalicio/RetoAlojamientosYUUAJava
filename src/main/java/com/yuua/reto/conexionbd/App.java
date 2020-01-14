@@ -36,7 +36,7 @@ public class App {
 			transacciones.insertarPaisesTerritoriosMunicipios(xmlCamping);
 			transacciones.cargarAlojamientos(xmlCamping);
 		}
-		sf.close();
+		
 		
 		Server servidor = new Server(transacciones);
 		Thread hiloserver = new Thread(servidor);
