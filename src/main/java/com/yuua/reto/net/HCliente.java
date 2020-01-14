@@ -16,9 +16,9 @@ public class HCliente implements Runnable {
 	private TransaccionesHibernate transacciones;
 	private Server server;
 
-	public HCliente(Server server, TransaccionesHibernate transacciones) {
+	public HCliente(Server server, TransaccionesHibernate transacciones,Socket simismo) {
 		this.server = server;
-		this.socket = server.cliente;
+		this.socket = simismo;
 		this.salida = server.salida;
 		this.entrada = server.entrada;
 		this.transacciones = transacciones;
@@ -53,8 +53,8 @@ public class HCliente implements Runnable {
 			e.printStackTrace();
 		} finally {
 			try {
-				if (socket != null)
-					socket.close();
+				//if (socket != null)
+					//socket.close();
 				if (entrada != null)
 					entrada.close();
 				if (salida != null)
@@ -62,6 +62,7 @@ public class HCliente implements Runnable {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+			server.borrarHilo(this);
 		}
 	}
 

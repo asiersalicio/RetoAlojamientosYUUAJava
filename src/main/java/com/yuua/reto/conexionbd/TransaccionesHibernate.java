@@ -110,6 +110,8 @@ public class TransaccionesHibernate {
 			org.hibernate.query.Query<?> queryHbn = session.createQuery(query);
 			queryHbn.setMaxResults(20);
 			objetos = queryHbn.getResultList().toArray();
+			session.getTransaction().commit();
+			
 			return objetos;
 		} else {
 			return null;

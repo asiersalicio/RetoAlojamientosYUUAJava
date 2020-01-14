@@ -14,7 +14,7 @@ public class Server implements Runnable {
 	private final int PUERTO = 55555;
 	public ServerSocket servidor = null;
 	public ArrayList<HCliente> conexiones;
-	public Socket cliente = null;
+	//public Socket cliente = null;
 	public ObjectInputStream entrada = null;
 	public ObjectOutputStream salida = null;
 	public TransaccionesHibernate transaccionesHibernate;
@@ -27,7 +27,6 @@ public class Server implements Runnable {
 	@Override
 	public void run() {
 		servidor = null;
-		cliente = null;
 		entrada = null;
 		salida = null;
 		try {
@@ -35,12 +34,12 @@ public class Server implements Runnable {
 			conexiones = new ArrayList<HCliente>();
 			while (true) {
 				System.out.println("Esperando conexiones del cliente...");
-				cliente = servidor.accept();
+				Socket cliente = servidor.accept();
 				System.out.println("Conexion realizada");
 				salida = new ObjectOutputStream(cliente.getOutputStream());
 				entrada = new ObjectInputStream(cliente.getInputStream());
 	
-				HCliente hiloCliente = new HCliente(this,this.transaccionesHibernate);
+				HCliente hiloCliente = new HCliente(this,this.transaccionesHibernate,cliente);
 				Thread threadCliente = new Thread(hiloCliente);
 				threadCliente.start();
 				conexiones.add(hiloCliente);
@@ -55,10 +54,7 @@ public class Server implements Runnable {
 			try {
 				if (servidor != null)
 					servidor.close();
-				if (cliente != null)
-					cliente.close();
 				if (entrada != null)
-
 					entrada.close();
 				if (salida != null)
 					salida.close();
