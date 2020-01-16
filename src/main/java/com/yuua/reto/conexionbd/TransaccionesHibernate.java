@@ -1,6 +1,7 @@
 package com.yuua.reto.conexionbd;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -78,6 +79,27 @@ public class TransaccionesHibernate {
 		objeto = session.get(clase, id);
 		return objeto;
 	}
+	
+	
+	public Object consultarAlojamientoPorFechas(Alojamiento aloj,Date fecha1,Date fecha2) {
+		Session session = factory.openSession();
+		Object[] objetos = null;
+		String query = "from Alojamiento as aloj where aloj.idAlojamiento not in("+
+							"select r.idAlojamiento from reserva as r where (r.fechaEntrada between MIFECHA1 and MIFECHA2) OR (r.fechaSalida between MIFECHA1 and MIFECHA2) and r.idAlojamiento = 'ALOJ.GETID'"+
+						")";
+		
+		
+		return null;	
+	}
+	
+	public Object buscarAlojamientoPorFechasYLoc(Date fecha1,Date fecha2) {
+		Session session = factory.openSession();
+		Object[] objetos = null;
+		//String query = "FROM " + clase;
+		
+		
+		return null;
+	}
 
 	/**
 	 * Metodo para buscar elementos en la base de datos por campos
@@ -110,7 +132,7 @@ public class TransaccionesHibernate {
 			}
 			session.beginTransaction();
 			org.hibernate.query.Query<?> queryHbn = session.createQuery(query);
-			queryHbn.setFetchSize (20);
+			queryHbn.setMaxResults(20);
 			objetos = queryHbn.getResultList().toArray();
 			session.getTransaction().commit();
 			
