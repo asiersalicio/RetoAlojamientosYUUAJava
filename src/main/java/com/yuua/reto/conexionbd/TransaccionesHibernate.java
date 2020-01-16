@@ -6,6 +6,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
 import com.yuua.reto.entidades.Alojamiento;
+import com.yuua.reto.entidades.Localizacion;
 import com.yuua.reto.entidades.Municipio;
 import com.yuua.reto.entidades.Pais;
 import com.yuua.reto.entidades.Territorio;
@@ -52,7 +53,8 @@ public class TransaccionesHibernate {
 		for (int i = 0; i < controlador.getSize(); i++) {
 			Alojamiento aloj = controlador.toAlojamientoById(i, session);
 			Alojamiento alojbd = (Alojamiento) session.createQuery("FROM Alojamiento WHERE nombre = '" + aloj.getNombre() + "' AND descripcion='" + aloj.getDescripcion() + "'").uniqueResult();
-			if (alojbd == null) {
+			Localizacion loctemp=aloj.getLocalizacion();
+			if (alojbd == null && (loctemp.getTpais()!=null && loctemp.getTmunicipio()!=null && loctemp.getTterritorio()!=null)) {
 				session.saveOrUpdate(aloj);
 			}
 		}
@@ -108,7 +110,7 @@ public class TransaccionesHibernate {
 			}
 			session.beginTransaction();
 			org.hibernate.query.Query<?> queryHbn = session.createQuery(query);
-			queryHbn.setMaxResults(20);
+			queryHbn.setFetchSize (20);
 			objetos = queryHbn.getResultList().toArray();
 			session.getTransaction().commit();
 			

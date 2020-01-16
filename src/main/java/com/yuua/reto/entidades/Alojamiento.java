@@ -32,7 +32,7 @@ public class Alojamiento {
 	@Column(name = "capacity")
 	int capacidad;
 	
-	@OneToOne(cascade = {CascadeType.ALL})
+	@OneToOne(cascade = {CascadeType.ALL}, targetEntity = Localizacion.class)
 	Localizacion localizacion;
 
 	protected Alojamiento() {

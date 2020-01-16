@@ -16,11 +16,15 @@ public class HCliente implements Runnable {
 	private TransaccionesHibernate transacciones;
 	private Server server;
 
-	public HCliente(Server server, TransaccionesHibernate transacciones,Socket simismo) {
+	public HCliente(Server server, TransaccionesHibernate transacciones, Socket simismo) {
 		this.server = server;
 		this.socket = simismo;
-		this.salida = server.salida;
-		this.entrada = server.entrada;
+		try {
+			this.salida = new ObjectOutputStream(socket.getOutputStream());
+			this.entrada = new ObjectInputStream(socket.getInputStream());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		this.transacciones = transacciones;
 	}
 
@@ -29,19 +33,13 @@ public class HCliente implements Runnable {
 		try {
 			Request peticion = (Request) entrada.readObject();
 			switch (peticion.getCodigoPeticion()) {
-			case 0:
-				System.out.println("Peticion recibida, codigo: 0, matando hilo");
-				server.borrarHilo(this);
-				break;
-			case 1:
-				System.out.println("Peticion recibida, codigo: 1, contenido: " + peticion.getObjetoEnviado());
-				break;
 			case 60:
 				Object[] datosPeticion = (Object[]) peticion.getObjetoEnviado();
 				Object[] resultado = transacciones.consultarVariosObjetos((String) datosPeticion[0], (String[]) datosPeticion[1], (String[]) datosPeticion[2]);
 				Gson parser = new Gson();
 				String resultadoJson = parser.toJson(resultado);
 				server.mandarRequest(new Request(61, resultadoJson), salida);
+				break;
 			default:
 				break;
 			}
@@ -51,18 +49,6 @@ public class HCliente implements Runnable {
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
-		} finally {
-			try {
-				//if (socket != null)
-					//socket.close();
-				if (entrada != null)
-					entrada.close();
-				if (salida != null)
-					salida.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			server.borrarHilo(this);
 		}
 	}
 
