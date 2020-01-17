@@ -33,12 +33,22 @@ public class HCliente implements Runnable {
 		try {
 			Request peticion = (Request) entrada.readObject();
 			switch (peticion.getCodigoPeticion()) {
+			// Pedir
 			case 60:
 				Object[] datosPeticion = (Object[]) peticion.getObjetoEnviado();
 				Object[] resultado = transacciones.consultarVariosObjetos((String) datosPeticion[0], (String[]) datosPeticion[1], (String[]) datosPeticion[2]);
 				Gson parser = new Gson();
 				String resultadoJson = parser.toJson(resultado);
 				server.mandarRequest(new Request(61, resultadoJson), salida);
+				break;
+			// Insert
+			case 50:
+				Object datos = peticion.getObjetoEnviado();
+				boolean resbool = transacciones.insertarObjeto(datos);
+				server.mandarRequest(new Request(51, resbool), salida);
+				break;
+			case 70:
+				
 				break;
 			default:
 				break;

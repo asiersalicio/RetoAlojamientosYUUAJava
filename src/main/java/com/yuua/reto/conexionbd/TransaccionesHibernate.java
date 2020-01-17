@@ -1,6 +1,7 @@
 package com.yuua.reto.conexionbd;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Date;
 
 import org.hibernate.Session;
@@ -54,8 +55,8 @@ public class TransaccionesHibernate {
 		for (int i = 0; i < controlador.getSize(); i++) {
 			Alojamiento aloj = controlador.toAlojamientoById(i, session);
 			Alojamiento alojbd = (Alojamiento) session.createQuery("FROM Alojamiento WHERE nombre = '" + aloj.getNombre() + "' AND descripcion='" + aloj.getDescripcion() + "'").uniqueResult();
-			Localizacion loctemp=aloj.getLocalizacion();
-			if (alojbd == null && (loctemp.getTpais()!=null && loctemp.getTmunicipio()!=null && loctemp.getTterritorio()!=null)) {
+			Localizacion loctemp = aloj.getLocalizacion();
+			if (alojbd == null && (loctemp.getTpais() != null && loctemp.getTmunicipio() != null && loctemp.getTterritorio() != null)) {
 				session.saveOrUpdate(aloj);
 			}
 		}
@@ -79,26 +80,73 @@ public class TransaccionesHibernate {
 		objeto = session.get(clase, id);
 		return objeto;
 	}
-	
-	
-	public Object consultarAlojamientoPorFechas(Alojamiento aloj,Date fecha1,Date fecha2) {
-		Session session = factory.openSession();
-		Object[] objetos = null;
-		String query = "from Alojamiento as aloj where aloj.idAlojamiento not in("+
-							"select r.idAlojamiento from reserva as r where (r.fechaEntrada between MIFECHA1 and MIFECHA2) OR (r.fechaSalida between MIFECHA1 and MIFECHA2) and r.idAlojamiento = 'ALOJ.GETID'"+
-						")";
-		
-		
-		return null;	
+
+	public boolean insertarObjeto(Object objeto) {
+		try {
+			Session session = factory.openSession();
+			session.beginTransaction();
+			if (objeto instanceof Collection<?>) {
+				for (Object item : (Collection<?>) objeto) {
+					session.save(item);
+				}
+			} else {
+				session.save(objeto);
+			}
+			session.getTransaction().commit();
+			return true;
+		} catch (Exception e) {
+			return false;
+		}
 	}
-	
-	public Object buscarAlojamientoPorFechasYLoc(Date fecha1,Date fecha2) {
+
+	public Object consultarAlojamientoPorFechas(Alojamiento aloj, Date fecha1, Date fecha2) {
 		Session session = factory.openSession();
 		Object[] objetos = null;
-		//String query = "FROM " + clase;
-		
-		
+		String query = "from Alojamiento as aloj where aloj.idAlojamiento not in(" + "select r.idAlojamiento from reserva as r where (r.fechaEntrada between MIFECHA1 and MIFECHA2) OR (r.fechaSalida between MIFECHA1 and MIFECHA2) and r.idAlojamiento = 'ALOJ.GETID'" + ")";
+
 		return null;
+	}
+
+	public Object buscarAlojamientoPorFechasYLoc(Date fecha1, Date fecha2) {
+		Session session = factory.openSession();
+		Object[] objetos = null;
+		// String query = "FROM " + clase;
+
+		return null;
+	}
+
+	public boolean consultarDisponibilidad(String clase, String[] campos, String[] condiciones) {
+		if (campos.length == condiciones.length) {
+			Session session = factory.openSession();
+			Object[] objetos = null;
+			String query = sacarQuery(clase, campos, condiciones);
+			session.beginTransaction();
+			org.hibernate.query.Query<?> queryHbn = session.createQuery(query);
+			queryHbn.setMaxResults(20);
+			objetos = queryHbn.getResultList().toArray();
+			session.getTransaction().commit();
+			if (objetos.length != 0 && objetos != null) {
+				return false;
+			} else {
+				return true;
+			}
+		} else {
+			return false;
+		}
+	}
+
+	private String sacarQuery(String clase, String[] campos, String[] condiciones) {
+		String query = "FROM " + clase;
+		for (int i = 0; i < condiciones.length; i++) {
+			if (condiciones.length > 0) {
+				query += " WHERE ";
+			}
+			query += campos[i] + " = '" + condiciones[i] + "'";
+			if (i < condiciones.length - 1) {
+				query += " AND ";
+			}
+		}
+		return query;
 	}
 
 	/**
@@ -120,22 +168,13 @@ public class TransaccionesHibernate {
 		if (campos.length == condiciones.length) {
 			Session session = factory.openSession();
 			Object[] objetos = null;
-			String query = "FROM " + clase;
-			for (int i = 0; i < condiciones.length; i++) {
-				if (condiciones.length > 0) {
-					query += " WHERE ";
-				}
-				query += campos[i] + " = '" + condiciones[i] + "'";
-				if (i < condiciones.length - 1) {
-					query += " AND ";
-				}
-			}
+			String query = sacarQuery(clase, campos, condiciones);
 			session.beginTransaction();
 			org.hibernate.query.Query<?> queryHbn = session.createQuery(query);
 			queryHbn.setMaxResults(20);
 			objetos = queryHbn.getResultList().toArray();
 			session.getTransaction().commit();
-			
+
 			return objetos;
 		} else {
 			return null;
