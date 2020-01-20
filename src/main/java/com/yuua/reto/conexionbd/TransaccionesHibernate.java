@@ -1,16 +1,22 @@
 package com.yuua.reto.conexionbd;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.yuua.reto.entidades.Alojamiento;
 import com.yuua.reto.entidades.Localizacion;
 import com.yuua.reto.entidades.Municipio;
 import com.yuua.reto.entidades.Pais;
+import com.yuua.reto.entidades.Reserva;
 import com.yuua.reto.entidades.Territorio;
 import com.yuua.reto.xml.XMLControler;
 
@@ -78,41 +84,98 @@ public class TransaccionesHibernate {
 		Session session = factory.openSession();
 		Object objeto = null;
 		objeto = session.get(clase, id);
+		session.clear();
+		session.close();
 		return objeto;
 	}
 
-	public boolean insertarObjeto(Object objeto) {
+	public boolean insertarObjeto(Object nombre, String objetos) {
 		try {
+			Gson gson = new Gson();
+
+			List<?> list = new ArrayList<>();
+
+			switch ((String) nombre) {
+			case "Alojamiento":
+				list = gson.fromJson(objetos, new TypeToken<List<Alojamiento>>() {
+				}.getType());
+				break;
+			case "Pais":
+				list = gson.fromJson(objetos, new TypeToken<List<Pais>>() {
+				}.getType());
+				break;
+			case "Territorio":
+				list = gson.fromJson(objetos, new TypeToken<List<Territorio>>() {
+				}.getType());
+				break;
+			case "Municipio":
+				list = gson.fromJson(objetos, new TypeToken<List<Municipio>>() {
+				}.getType());
+				break;
+			case "Localizacion":
+				list = gson.fromJson(objetos, new TypeToken<List<Localizacion>>() {
+				}.getType());
+				break;
+			case "Reserva":
+				list = gson.fromJson(objetos, new TypeToken<List<Reserva>>() {
+				}.getType());
+				break;
+			}
+
 			Session session = factory.openSession();
 			session.beginTransaction();
-			if (objeto instanceof Collection<?>) {
-				for (Object item : (Collection<?>) objeto) {
-					session.save(item);
-				}
-			} else {
-				session.save(objeto);
+			for (Object item : list) {
+				session.save(item);
 			}
 			session.getTransaction().commit();
+			session.clear();
+			session.close();
 			return true;
 		} catch (Exception e) {
+			e.printStackTrace();
 			return false;
 		}
 	}
 
-	public Object consultarAlojamientoPorFechas(Alojamiento aloj, Date fecha1, Date fecha2) {
+
+	public boolean consultarAlojamientoPorFechas(Alojamiento aloj, Date fecha1, Date fecha2) {
 		Session session = factory.openSession();
 		Object[] objetos = null;
-		String query = "from Alojamiento as aloj where aloj.idAlojamiento not in(" + "select r.idAlojamiento from reserva as r where (r.fechaEntrada between MIFECHA1 and MIFECHA2) OR (r.fechaSalida between MIFECHA1 and MIFECHA2) and r.idAlojamiento = 'ALOJ.GETID'" + ")";
-
-		return null;
+		int id = aloj.getId();
+		String query = "from Alojamiento as aloj,Reserva as res where aloj.id not in(" + "select r.alojamiento.id " + "from Reserva as r " + "where (r.fechaEntrada between " + formatFchSql(fecha1) + " and " + formatFchSql(fecha2) + ") OR (r.fechaSalida between " + formatFchSql(fecha1) + " and " + formatFchSql(fecha2) + ")) and res.alojamiento.id = '" + id + "'";
+		org.hibernate.query.Query<?> queryHbn = session.createQuery(query);
+		queryHbn.setMaxResults(20);
+		objetos = queryHbn.getResultList().toArray();
+		if (objetos.length == 0 || objetos == null) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 
-	public Object buscarAlojamientoPorFechasYLoc(Date fecha1, Date fecha2) {
+	public Object[] buscarAlojamientosPorFechasYLocalizacion(Municipio municipio, Date fecha1, Date fecha2) {
 		Session session = factory.openSession();
 		Object[] objetos = null;
-		// String query = "FROM " + clase;
+		String query = "from Alojamiento as aloj where aloj.localizacion.tmunicipio.id='" + new String(municipio.getId()) + "' and aloj.id not in(select r.alojamiento.id from Reserva as r where (r.fechaEntrada between " + formatFchSql(fecha1) + " and " + formatFchSql(fecha2) + ") OR (r.fechaSalida between " + formatFchSql(fecha1) + " and " + formatFchSql(fecha2) + "))";
+		org.hibernate.query.Query<?> queryHbn = session.createQuery(query);
+		queryHbn.setMaxResults(20);
+		objetos = queryHbn.getResultList().toArray();
+		return objetos;
+	}
 
-		return null;
+	public Object[] buscarAlojamientosPorFechas(Date fecha1, Date fecha2) {
+		Session session = factory.openSession();
+		Object[] objetos = null;
+		String query = "from Alojamiento as aloj where aloj.id not in(select r.alojamiento.id from Reserva as r where (r.fechaEntrada between " + formatFchSql(fecha1) + " and " + formatFchSql(fecha2) + ") OR (r.fechaSalida between " + formatFchSql(fecha1) + " and " + formatFchSql(fecha2) + "))";
+		org.hibernate.query.Query<?> queryHbn = session.createQuery(query);
+		queryHbn.setMaxResults(20);
+		objetos = queryHbn.getResultList().toArray();
+		return objetos;
+	}
+
+	private String formatFchSql(Date fecha) {
+		SimpleDateFormat df = new SimpleDateFormat("YYYY-MM-DD");
+		return df.format(fecha);
 	}
 
 	public boolean consultarDisponibilidad(String clase, String[] campos, String[] condiciones) {
@@ -125,6 +188,8 @@ public class TransaccionesHibernate {
 			queryHbn.setMaxResults(20);
 			objetos = queryHbn.getResultList().toArray();
 			session.getTransaction().commit();
+			session.clear();
+			session.close();
 			if (objetos.length != 0 && objetos != null) {
 				return false;
 			} else {
@@ -174,11 +239,11 @@ public class TransaccionesHibernate {
 			queryHbn.setMaxResults(20);
 			objetos = queryHbn.getResultList().toArray();
 			session.getTransaction().commit();
-
+			session.clear();
+			session.close();
 			return objetos;
 		} else {
 			return null;
 		}
 	}
-
 }

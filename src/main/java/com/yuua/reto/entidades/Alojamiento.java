@@ -48,8 +48,15 @@ public class Alojamiento {
 		this.capacidad = capacidad;
 		this.localizacion = localizacion;
 	}
+	
+	
 
 	
+
+	public Alojamiento(int id) {
+		super();
+		this.id = id;
+	}
 
 	public Localizacion getLocalizacion() {
 		return localizacion;

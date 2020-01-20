@@ -5,9 +5,12 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.Date;
 
 import com.google.gson.Gson;
 import com.yuua.reto.conexionbd.TransaccionesHibernate;
+import com.yuua.reto.entidades.Alojamiento;
+import com.yuua.reto.entidades.Municipio;
 
 public class HCliente implements Runnable {
 	private Socket socket = null;
@@ -32,23 +35,49 @@ public class HCliente implements Runnable {
 	public void run() {
 		try {
 			Request peticion = (Request) entrada.readObject();
+			Object[] datosPeticion, resultado;
+			String resultadoJson;
+			boolean resultadoBoolean;
+			Gson parser;
 			switch (peticion.getCodigoPeticion()) {
-			// Pedir
+			// Consultar alojamientos disponibles entre fechas en localizacion especifica
+			case 20:
+				datosPeticion = (Object[]) peticion.getObjetoEnviado();
+				resultado = transacciones.buscarAlojamientosPorFechasYLocalizacion((Municipio) datosPeticion[0],(Date) datosPeticion[1], (Date) datosPeticion[2]);
+				parser = new Gson();
+				resultadoJson = parser.toJson(resultado);
+				server.mandarRequest(new Request(21, resultadoJson), salida);
+				break;
+			// Consultar alojamientos disponibles entre fechas
+			case 30:
+				datosPeticion = (Object[]) peticion.getObjetoEnviado();
+				resultado = transacciones.buscarAlojamientosPorFechas((Date) datosPeticion[0], (Date) datosPeticion[1]);
+				parser = new Gson();
+				resultadoJson = parser.toJson(resultado);
+				server.mandarRequest(new Request(31, resultadoJson), salida);
+				break;
+			// Consultar disponibilidad alojamiento entre fechas - con id
+			case 40:
+				datosPeticion = (Object[]) peticion.getObjetoEnviado();
+				resultadoBoolean = transacciones.consultarAlojamientoPorFechas((Alojamiento) datosPeticion[0], (Date) datosPeticion[1], (Date) datosPeticion[2]);
+				server.mandarRequest(new Request(41, resultadoBoolean), salida);
+				break;
+			// Consulta con parametros
 			case 60:
-				Object[] datosPeticion = (Object[]) peticion.getObjetoEnviado();
-				Object[] resultado = transacciones.consultarVariosObjetos((String) datosPeticion[0], (String[]) datosPeticion[1], (String[]) datosPeticion[2]);
-				Gson parser = new Gson();
-				String resultadoJson = parser.toJson(resultado);
+				datosPeticion = (Object[]) peticion.getObjetoEnviado();
+				resultado = transacciones.consultarVariosObjetos((String) datosPeticion[0], (String[]) datosPeticion[1], (String[]) datosPeticion[2]);
+				parser = new Gson();
+				resultadoJson = parser.toJson(resultado);
 				server.mandarRequest(new Request(61, resultadoJson), salida);
 				break;
 			// Insert
 			case 50:
-				Object datos = peticion.getObjetoEnviado();
-				boolean resbool = transacciones.insertarObjeto(datos);
+				Object[] datos = (Object[]) peticion.getObjetoEnviado();
+				boolean resbool = transacciones.insertarObjeto(datos[0],(String) datos[1]);
 				server.mandarRequest(new Request(51, resbool), salida);
 				break;
 			case 70:
-				
+
 				break;
 			default:
 				break;
