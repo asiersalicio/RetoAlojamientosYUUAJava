@@ -60,10 +60,12 @@ public class TransaccionesHibernate {
 		session.beginTransaction();
 		for (int i = 0; i < controlador.getSize(); i++) {
 			Alojamiento aloj = controlador.toAlojamientoById(i, session);
-			Alojamiento alojbd = (Alojamiento) session.createQuery("FROM Alojamiento WHERE nombre = '" + aloj.getNombre() + "' AND descripcion='" + aloj.getDescripcion() + "'").uniqueResult();
-			Localizacion loctemp = aloj.getLocalizacion();
-			if (alojbd == null && (loctemp.getTpais() != null && loctemp.getTmunicipio() != null && loctemp.getTterritorio() != null)) {
-				session.saveOrUpdate(aloj);
+			if (aloj != null) {
+				Alojamiento alojbd = (Alojamiento) session.createQuery("FROM Alojamiento WHERE nombre = '" + aloj.getNombre() + "' AND descripcion='" + aloj.getDescripcion() + "'").uniqueResult();
+				Localizacion loctemp = aloj.getLocalizacion();
+				if (alojbd == null && (loctemp.getTpais() != null && loctemp.getTmunicipio() != null && loctemp.getTterritorio() != null)) {
+					session.saveOrUpdate(aloj);
+				}
 			}
 		}
 		session.getTransaction().commit();
@@ -92,9 +94,7 @@ public class TransaccionesHibernate {
 	public boolean insertarObjeto(Object nombre, String objetos) {
 		try {
 			Gson gson = new Gson();
-
 			List<?> list = new ArrayList<>();
-
 			switch ((String) nombre) {
 			case "Alojamiento":
 				list = gson.fromJson(objetos, new TypeToken<List<Alojamiento>>() {
@@ -136,7 +136,6 @@ public class TransaccionesHibernate {
 			return false;
 		}
 	}
-
 
 	public boolean consultarAlojamientoPorFechas(Alojamiento aloj, Date fecha1, Date fecha2) {
 		Session session = factory.openSession();
@@ -191,14 +190,14 @@ public class TransaccionesHibernate {
 		}
 		return query;
 	}
-	
+
 	private String sacarQueryLike(String clase, String[] campos, String[] condiciones) {
 		String query = "FROM " + clase;
 		for (int i = 0; i < condiciones.length; i++) {
 			if (condiciones.length > 0) {
 				query += " WHERE ";
 			}
-			query += "lower("+campos[i] + ") LIKE '%" + condiciones[i].toLowerCase() + "%'";
+			query += "lower(" + campos[i] + ") LIKE '%" + condiciones[i].toLowerCase() + "%'";
 			if (i < condiciones.length - 1) {
 				query += " AND ";
 			}
@@ -221,15 +220,15 @@ public class TransaccionesHibernate {
 	 *         CITY","943424589"}); Res: los alojamientos con nombre "A ROOM IN THE
 	 *         CITY" y telefono "943424589" Codigo:60
 	 */
-	public Object[] consultarVariosObjetos(String clase, String[] campos, String[] condiciones,boolean like) {
+	public Object[] consultarVariosObjetos(String clase, String[] campos, String[] condiciones, boolean like) {
 		if (campos.length == condiciones.length) {
 			Session session = factory.openSession();
 			Object[] objetos = null;
 			String query;
 			if (like) {
 				query = sacarQueryLike(clase, campos, condiciones);
-			}else {
-				query = sacarQuery(clase, campos, condiciones);	
+			} else {
+				query = sacarQuery(clase, campos, condiciones);
 			}
 			session.beginTransaction();
 			org.hibernate.query.Query<?> queryHbn = session.createQuery(query);
