@@ -54,6 +54,7 @@ public class Server implements Runnable {
 		try {
 			salida.writeObject(peticion);
 		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 }

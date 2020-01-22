@@ -178,35 +178,27 @@ public class TransaccionesHibernate {
 		return df.format(fecha);
 	}
 
-	public boolean consultarDisponibilidad(String clase, String[] campos, String[] condiciones) {
-		if (campos.length == condiciones.length) {
-			Session session = factory.openSession();
-			Object[] objetos = null;
-			String query = sacarQuery(clase, campos, condiciones);
-			session.beginTransaction();
-			org.hibernate.query.Query<?> queryHbn = session.createQuery(query);
-			queryHbn.setMaxResults(20);
-			objetos = queryHbn.getResultList().toArray();
-			session.getTransaction().commit();
-			session.clear();
-			session.close();
-			if (objetos.length != 0 && objetos != null) {
-				return false;
-			} else {
-				return true;
-			}
-		} else {
-			return false;
-		}
-	}
-
 	private String sacarQuery(String clase, String[] campos, String[] condiciones) {
 		String query = "FROM " + clase;
 		for (int i = 0; i < condiciones.length; i++) {
 			if (condiciones.length > 0) {
 				query += " WHERE ";
 			}
-			query += campos[i] + " = '" + condiciones[i] + "'";
+			query += campos[i] + " = '" + condiciones[i].toLowerCase() + "'";
+			if (i < condiciones.length - 1) {
+				query += " AND ";
+			}
+		}
+		return query;
+	}
+	
+	private String sacarQueryLike(String clase, String[] campos, String[] condiciones) {
+		String query = "FROM " + clase;
+		for (int i = 0; i < condiciones.length; i++) {
+			if (condiciones.length > 0) {
+				query += " WHERE ";
+			}
+			query += "lower("+campos[i] + ") LIKE '%" + condiciones[i].toLowerCase() + "%'";
 			if (i < condiciones.length - 1) {
 				query += " AND ";
 			}
@@ -229,11 +221,16 @@ public class TransaccionesHibernate {
 	 *         CITY","943424589"}); Res: los alojamientos con nombre "A ROOM IN THE
 	 *         CITY" y telefono "943424589" Codigo:60
 	 */
-	public Object[] consultarVariosObjetos(String clase, String[] campos, String[] condiciones) {
+	public Object[] consultarVariosObjetos(String clase, String[] campos, String[] condiciones,boolean like) {
 		if (campos.length == condiciones.length) {
 			Session session = factory.openSession();
 			Object[] objetos = null;
-			String query = sacarQuery(clase, campos, condiciones);
+			String query;
+			if (like) {
+				query = sacarQueryLike(clase, campos, condiciones);
+			}else {
+				query = sacarQuery(clase, campos, condiciones);	
+			}
 			session.beginTransaction();
 			org.hibernate.query.Query<?> queryHbn = session.createQuery(query);
 			queryHbn.setMaxResults(20);

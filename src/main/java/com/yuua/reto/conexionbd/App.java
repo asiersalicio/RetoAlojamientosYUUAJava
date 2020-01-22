@@ -12,6 +12,7 @@ public class App {
 
 	public static void main(String[] args) {
 
+		//TO-DO CAMBIAR LUGAR DE ENLACE
 		XMLControler xmlAlojamientos = new XMLControler("http://opendata.euskadi.eus/contenidos/ds_recursos_turisticos/albergues_de_euskadi/opendata/alojamientos.xml", "Albergues");
 		XMLControler xmlAlbergues = new XMLControler("http://opendata.euskadi.eus/contenidos/ds_recursos_turisticos/alojamientos_rurales_euskadi/opendata/alojamientos.xml", "Rurales");
 		XMLControler xmlCamping = new XMLControler("http://opendata.euskadi.eus/contenidos/ds_recursos_turisticos/campings_de_euskadi/opendata/alojamientos.xml", "Camping");
