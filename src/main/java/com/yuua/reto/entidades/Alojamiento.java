@@ -49,10 +49,6 @@ public class Alojamiento {
 		this.localizacion = localizacion;
 	}
 	
-	
-
-	
-
 	public Alojamiento(int id) {
 		super();
 		this.id = id;

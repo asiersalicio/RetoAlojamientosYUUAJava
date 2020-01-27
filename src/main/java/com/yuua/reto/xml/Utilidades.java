@@ -12,6 +12,8 @@ public class Utilidades {
 		texto=texto.replace("&Eacute ", "É");
 		texto=texto.replace("<strong>", "");
 		texto=texto.replace("</strong>", "");
+		texto=texto.replace("<br>", " ");
+		texto=texto.replace("<br/>", " ");
 		return texto;
 	}
 	

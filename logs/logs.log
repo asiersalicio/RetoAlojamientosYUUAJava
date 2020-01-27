@@ -1,3 +1,16 @@
 15-01-2020 08:57:09 | XMLControler [5] | No se ha podido leer/abrir el archivo
 15-01-2020 08:57:45 | XMLControler [5] | No se ha podido leer/abrir el archivo
 15-01-2020 08:58:24 | XMLControler [5] | No se ha podido leer/abrir el archivo
+23-01-2020 10:02:56 | TransaccionesHibernate [0] | Objeto no econtradoNo row with the given identifier exists: [com.yuua.reto.entidades.Pais#[C@6bfccd97]
+23-01-2020 10:07:06 | TransaccionesHibernate [0] | Objeto no econtradoNo row with the given identifier exists: [com.yuua.reto.entidades.Pais#[C@2efce4a4]
+23-01-2020 10:09:15 | TransaccionesHibernate [0] | Objeto no econtradoNo row with the given identifier exists: [com.yuua.reto.entidades.Pais#[C@4481b3d6]
+23-01-2020 10:09:39 | TransaccionesHibernate [0] | Objeto no econtradoNo row with the given identifier exists: [com.yuua.reto.entidades.Pais#[C@26ee5f2f]
+23-01-2020 10:09:45 | TransaccionesHibernate [0] | Objeto no econtradoNo row with the given identifier exists: [com.yuua.reto.entidades.Pais#[C@262cf3ea]
+23-01-2020 10:09:47 | TransaccionesHibernate [0] | Objeto no econtradoNo row with the given identifier exists: [com.yuua.reto.entidades.Pais#[C@5daec27a]
+23-01-2020 10:09:48 | TransaccionesHibernate [0] | Objeto no econtradoNo row with the given identifier exists: [com.yuua.reto.entidades.Pais#[C@5dab8fbe]
+23-01-2020 10:09:57 | TransaccionesHibernate [0] | Objeto no econtradoNo row with the given identifier exists: [com.yuua.reto.entidades.Pais#[C@3162c37b]
+23-01-2020 10:09:59 | TransaccionesHibernate [0] | Objeto no econtradoNo row with the given identifier exists: [com.yuua.reto.entidades.Pais#[C@337e63b6]
+23-01-2020 10:14:28 | TransaccionesHibernate [0] | Objeto no econtrado 	No row with the given identifier exists: [com.yuua.reto.entidades.Pais#[C@4dfcc194]
+23-01-2020 10:14:56 | TransaccionesHibernate [0] | Objeto no econtrado 	No row with the given identifier exists: [com.yuua.reto.entidades.Pais#[C@43961e4b]
+23-01-2020 10:15:12 | TransaccionesHibernate [0] | Objeto no econtrado 	No row with the given identifier exists: [com.yuua.reto.entidades.Pais#[C@250477c4]
+23-01-2020 10:15:13 | TransaccionesHibernate [0] | Objeto no econtrado 	No row with the given identifier exists: [com.yuua.reto.entidades.Pais#[C@5452ef0]

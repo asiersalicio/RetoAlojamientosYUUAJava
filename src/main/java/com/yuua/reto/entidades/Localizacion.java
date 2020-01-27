@@ -5,11 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-
-import org.hibernate.Session;
 
 @Entity
 @Table(name = "tlocalizacion")
@@ -19,16 +15,12 @@ public class Localizacion {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "idLocalizacion")
 	int id;
-	@ManyToOne
-	@JoinColumn(name = "countrycode")
-	Pais tpais;
-	@ManyToOne
-	@JoinColumn(name = "municipalitycode")
-	Municipio tmunicipio;
-	@ManyToOne
-	@JoinColumn(name = "territorycode")
-	Territorio tterritorio;
-
+	@Column(name = "country")
+	String tpais;
+	@Column(name = "municipality")
+	String tmunicipio;
+	@Column(name = "territory")
+	String tterritorio;
 	@Column(name = "postalcode")
 	String codigoPostal;
 	@Column(name = "address")
@@ -42,7 +34,7 @@ public class Localizacion {
 
 	}
 
-	public Localizacion(Pais tpais, Municipio tmunicipio, Territorio tterritorio, String codigoPostal, String direccion, Double latitud, Double longitud) {
+	public Localizacion(String tpais, String tmunicipio, String tterritorio, String codigoPostal, String direccion, Double latitud, Double longitud) {
 		this.tpais = tpais;
 		this.tmunicipio = tmunicipio;
 		this.tterritorio = tterritorio;
@@ -50,12 +42,6 @@ public class Localizacion {
 		this.direccion = direccion;
 		this.latitud = latitud;
 		this.longitud = longitud;
-	}
-
-	public void cargarLocalizacion(Session session, String idPais, String idTerritorio, String idMunicipio) {
-		this.tpais=session.get(Pais.class, idPais);
-		this.tterritorio=session.get(Territorio.class, idPais);
-		this.tmunicipio=session.get(Municipio.class, idPais);
 	}
 
 	public Localizacion(String codigoPostal, String direccion, Double latitud, Double longitud) {
@@ -74,27 +60,27 @@ public class Localizacion {
 		this.id = id;
 	}
 
-	public Pais getTpais() {
+	public String getTpais() {
 		return tpais;
 	}
 
-	public void setTpais(Pais tpais) {
+	public void setTpais(String tpais) {
 		this.tpais = tpais;
 	}
 
-	public Municipio getTmunicipio() {
+	public String getTmunicipio() {
 		return tmunicipio;
 	}
 
-	public void setTmunicipio(Municipio tmunicipio) {
+	public void setTmunicipio(String tmunicipio) {
 		this.tmunicipio = tmunicipio;
 	}
 
-	public Territorio getTterritorio() {
+	public String getTterritorio() {
 		return tterritorio;
 	}
 
-	public void setTterritorio(Territorio tterritorio) {
+	public void setTterritorio(String tterritorio) {
 		this.tterritorio = tterritorio;
 	}
 

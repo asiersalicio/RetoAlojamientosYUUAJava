@@ -10,7 +10,6 @@ import java.util.Date;
 import com.google.gson.Gson;
 import com.yuua.reto.conexionbd.TransaccionesHibernate;
 import com.yuua.reto.entidades.Alojamiento;
-import com.yuua.reto.entidades.Municipio;
 
 public class HCliente implements Runnable {
 	private Socket socket = null;
@@ -43,8 +42,9 @@ public class HCliente implements Runnable {
 			// Consultar alojamientos disponibles entre fechas en localizacion especifica
 			case 20:
 				datosPeticion = (Object[]) peticion.getObjetoEnviado();
-				resultado = transacciones.buscarAlojamientosPorFechasYLocalizacion((Municipio) datosPeticion[0], (Date) datosPeticion[1], (Date) datosPeticion[2]);
 				parser = new Gson();
+				String municipio=(String) datosPeticion[0];
+				resultado = transacciones.buscarAlojamientosPorFechasYLocalizacion(municipio, (Date) datosPeticion[1], (Date) datosPeticion[2]);				
 				resultadoJson = parser.toJson(resultado);
 				server.mandarRequest(new Request(21, resultadoJson), salida);
 				break;
@@ -81,7 +81,7 @@ public class HCliente implements Runnable {
 			// Insert
 			case 50:
 				Object[] datos = (Object[]) peticion.getObjetoEnviado();
-				boolean resbool = transacciones.insertarObjeto(datos[0], (String) datos[1]);
+				boolean resbool = transacciones.insertarObjetosJson(datos[0], (String) datos[1]);
 				server.mandarRequest(new Request(51, resbool), salida);
 				break;
 			case 70:

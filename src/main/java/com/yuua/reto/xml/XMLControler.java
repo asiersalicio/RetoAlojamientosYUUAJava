@@ -19,18 +19,15 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.io.FileUtils;
-import org.hibernate.Session;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import com.yuua.reto.conexionbd.TransaccionesHibernate;
 import com.yuua.reto.entidades.Alojamiento;
 import com.yuua.reto.entidades.Localizacion;
-import com.yuua.reto.entidades.Municipio;
-import com.yuua.reto.entidades.Pais;
-import com.yuua.reto.entidades.Territorio;
 
 import logs.Logger;
 
@@ -42,10 +39,12 @@ public class XMLControler {
 	private int size;
 	Document doc;
 	private boolean updateRequired = true;
+	private TransaccionesHibernate transacciones;
 
-	public XMLControler(String url, String tipo) {
+	public XMLControler(String url, String tipo,TransaccionesHibernate transacciones) {
 		this.url = url;
 		this.tipo = tipo;
+		this.transacciones=transacciones;
 	}
 
 	public boolean isUpdateRequired() {
@@ -80,7 +79,6 @@ public class XMLControler {
 	}
 
 	private void sobreecribirXML() {
-
 		URLConnection conn;
 		try {
 			conn = new URL(url).openConnection();
@@ -141,8 +139,8 @@ public class XMLControler {
 		return doc;
 	}
 
-	public Alojamiento toAlojamientoById(int id, Session session) {
-		String nombre = "", descripcion = "", direccion = "", web = "", email = "", tipo = "", codPais = "", codMunicipio = "", codTerritorio = "", codigoPostal = "";
+	public Alojamiento toAlojamientoById(int id) {
+		String nombre = "", descripcion = "", direccion = "", web = "", email = "", tipo = "", paisString = "", municipioString = "", territorioString = "", codigoPostal = "";
 		int telefono = -1, capacidad = -1;
 		double latitud, longitud;
 
@@ -150,9 +148,7 @@ public class XMLControler {
 		Node xmlNode = extractNodeFromXML(id);
 
 		if (xmlNode.getNodeType() == Node.ELEMENT_NODE) {
-
 			Element eElement = (Element) xmlNode;
-
 			nombre = obtenerElement(eElement, "documentname", 0);
 			tipo = obtenerElement(eElement, "lodgingtype", 0);
 			descripcion = obtenerElement(eElement, "turismdescription", 1);
@@ -162,13 +158,12 @@ public class XMLControler {
 			} catch (NumberFormatException | NullPointerException f) {
 				telefono = -1;
 			}
-
 			web = obtenerElement(eElement, "web", 0);
 			email = obtenerElement(eElement, "tourismemail", 0);
 			capacidad = Integer.parseInt(obtenerElement(eElement, "capacity", 0));
-			codPais = obtenerElement(eElement, "countrycode", 0);
-			codMunicipio = obtenerElement(eElement, "municipalitycode", 0);
-			codTerritorio = obtenerElement(eElement, "territorycode", 0);
+			paisString = obtenerElement(eElement, "country", 0);
+			municipioString = obtenerElement(eElement, "municipality", 0);
+			territorioString = obtenerElement(eElement, "territory", 0);
 			codigoPostal = obtenerElement(eElement, "postalcode", 0);
 			try {
 				latitud = Double.valueOf(obtenerElement(eElement, "latwgs84", 0));
@@ -179,57 +174,57 @@ public class XMLControler {
 				longitud = Double.valueOf(obtenerElement(eElement, "lonwgs84", 0));
 			} catch (NumberFormatException | NullPointerException e) {
 				longitud = 0;
-			}
-			Pais pais = session.get(Pais.class, codPais.toCharArray());
-			Municipio municipio = session.get(Municipio.class, codMunicipio.toCharArray());
-			Territorio territorio = session.get(Territorio.class, codTerritorio.toCharArray());
-			if(pais==null || municipio == null || territorio == null) {
+			}		
+			if(paisString==null || municipioString == null || territorioString == null) {
 				return null;
 			}
-			Localizacion loc = new Localizacion(pais, municipio, territorio, codigoPostal, direccion, latitud, longitud);
+			if(latitud == 0 || longitud == 0) {
+				return null;
+			}
+			Localizacion loc = new Localizacion(paisString, municipioString, territorioString, codigoPostal, direccion, latitud, longitud);
 			aloj = new Alojamiento(tipo, nombre, descripcion, telefono, web, email, capacidad, loc);
 		}
 		return aloj;
 	}
 
-	public ArrayList<Object> buscarElementos(String nombreCodigo, String nombreCampo, Class<?> tipo) {
-		ArrayList<Object> elementos = new ArrayList<Object>();
-		Set<String> nombres = new HashSet<String>();
-		Set<String> codigos = new HashSet<String>();
-		for (int i = 0; i < this.size; i++) {
-			Node nodo = extractNodeFromXML(i);
-			if (nodo.getNodeType() == Node.ELEMENT_NODE) {
-				String nombre = obtenerElement((Element) nodo, nombreCampo, 0);
-				if (nombre.contains(" ")) {
-					String[] split = nombre.split(" ");
-					if (split[0].equals(split[1])) {
-						nombre = split[0];
-					}
-				}
-				nombres.add(nombre);
-				String codigo = obtenerElement((Element) nodo, nombreCodigo, 0);
-				if (codigo.contains(" ")) {
-					codigo = codigo.substring(0, codigo.indexOf(" "));
-				}
-				codigos.add(codigo);
-			}
-		}
-		Iterator<String> it1 = codigos.iterator();
-		Iterator<String> it2 = nombres.iterator();
-
-		while (it1.hasNext() && it2.hasNext()) {
-			if (tipo == Pais.class) {
-				elementos.add(new Pais(it1.next().toCharArray(), it2.next()));
-			} else if (tipo == Territorio.class) {
-				elementos.add(new Territorio(it1.next().toCharArray(), it2.next()));
-			} else if (tipo == Municipio.class) {
-				elementos.add(new Municipio(it1.next().toCharArray(), it2.next()));
-			} else {
-				return null;
-			}
-		}
-		return elementos;
-	}
+//	public ArrayList<Object> buscarElementos(String nombreCodigo, String nombreCampo, Class<?> tipo) {
+//		ArrayList<Object> elementos = new ArrayList<Object>();
+//		Set<String> nombres = new HashSet<String>();
+//		Set<String> codigos = new HashSet<String>();
+//		for (int i = 0; i < this.size; i++) {
+//			Node nodo = extractNodeFromXML(i);
+//			if (nodo.getNodeType() == Node.ELEMENT_NODE) {
+//				String nombre = obtenerElement((Element) nodo, nombreCampo, 0);
+//				if (nombre.contains(" ")) {
+//					String[] split = nombre.split(" ");
+//					if (split[0].equals(split[1])) {
+//						nombre = split[0];
+//					}
+//				}
+//				nombres.add(nombre);
+//				String codigo = obtenerElement((Element) nodo, nombreCodigo, 0);
+//				if (codigo.contains(" ")) {
+//					codigo = codigo.substring(0, codigo.indexOf(" "));
+//				}
+//				codigos.add(codigo);
+//			}
+//		}
+//		Iterator<String> it1 = codigos.iterator();
+//		Iterator<String> it2 = nombres.iterator();
+//
+//		while (it1.hasNext() && it2.hasNext()) {
+//			if (tipo == Pais.class) {
+//				elementos.add(new Pais(it1.next().toCharArray(), it2.next()));
+//			} else if (tipo == Territorio.class) {
+//				elementos.add(new Territorio(it1.next().toCharArray(), it2.next()));
+//			} else if (tipo == Municipio.class) {
+//				elementos.add(new Municipio(it1.next().toCharArray(), it2.next()));
+//			} else {
+//				return null;
+//			}
+//		}
+//		return elementos;
+//	}
 
 	private String obtenerElement(Element eElement, String tagName, int itemIndex) {
 		Node node = eElement.getElementsByTagName(tagName).item(itemIndex);
