@@ -87,6 +87,14 @@ public class HCliente implements Runnable {
 			case 70:
 
 				break;
+				//Consulta distinct
+			case 80:
+				datosPeticion = (Object[]) peticion.getObjetoEnviado();
+				resultado = transacciones.buscarMunicipiosDistinct((String) datosPeticion[0]);
+				parser = new Gson();
+				resultadoJson = parser.toJson(resultado);
+				server.mandarRequest(new Request(81, resultadoJson), salida);
+				break;
 			default:
 				break;
 			}

@@ -167,15 +167,11 @@ public class XMLControler {
 			codigoPostal = obtenerElement(eElement, "postalcode", 0);
 			try {
 				latitud = Double.valueOf(obtenerElement(eElement, "latwgs84", 0));
-			} catch (NumberFormatException | NullPointerException e) {
-				latitud = 0;
-			}
-			try {
 				longitud = Double.valueOf(obtenerElement(eElement, "lonwgs84", 0));
 			} catch (NumberFormatException | NullPointerException e) {
-				longitud = 0;
-			}		
-			if(paisString==null || municipioString == null || territorioString == null) {
+				return null;
+			}
+			if(paisString==null || paisString.length()<=0 || municipioString == null || municipioString.length()<=0 || territorioString == null || territorioString.length()<=0) {
 				return null;
 			}
 			if(latitud == 0 || longitud == 0) {

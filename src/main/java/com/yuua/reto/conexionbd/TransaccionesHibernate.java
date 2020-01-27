@@ -41,8 +41,7 @@ public class TransaccionesHibernate {
 				} catch (IndexOutOfBoundsException e) {
 					alojbd = null;
 				}
-				Localizacion loctemp = aloj.getLocalizacion();
-				if (alojbd == null && (loctemp.getTpais() != null && loctemp.getTmunicipio() != null && loctemp.getTterritorio() != null)) {
+				if (alojbd == null) {
 					insertarObjeto(aloj);
 				}
 			}
@@ -143,6 +142,13 @@ public class TransaccionesHibernate {
 		objetos = ejecutarQuery(query);
 		return objetos;
 	}
+	
+	public Object[] buscarMunicipiosDistinct(String nombre) {
+		Object[] objetos = null;
+		String query = "select distinct loc.tmunicipio from Localizacion as loc where lower(loc.tmunicipio) LIKE '%"+nombre+"%'";
+		objetos = ejecutarQuery(query);
+		return objetos;
+	}
 
 	private String formatFchSql(Date fecha) {
 		SimpleDateFormat df = new SimpleDateFormat("YYYY-MM-DD");
@@ -155,7 +161,7 @@ public class TransaccionesHibernate {
 			query += " WHERE ";
 		}
 		for (int i = 0; i < condiciones.length; i++) {	
-			query += campos[i] + " = '" + condiciones[i].toLowerCase() + "'";
+			query += "lower("+campos[i] + ") = '" + condiciones[i].toLowerCase() + "'";
 			if (i < condiciones.length - 1) {
 				query += " AND ";
 			}

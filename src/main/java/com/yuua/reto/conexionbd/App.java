@@ -11,7 +11,6 @@ import com.yuua.reto.xml.XMLControler;
 public class App {
 
 	public static void main(String[] args) {
-
 		Configuration conf = new Configuration().configure(new File("src/main/java/hibernate.cfg.xml"));
 		SessionFactory sf = conf.buildSessionFactory();
 		TransaccionesHibernate transacciones = new TransaccionesHibernate(sf);
@@ -28,15 +27,12 @@ public class App {
 		transacciones.insertarRoot();
 
 		if (xmlAlojamientos.isUpdateRequired()) {
-//		if(true) {
 			transacciones.cargarAlojamientos(xmlAlojamientos);
 		}
 		if (xmlAlbergues.isUpdateRequired()) {
-//		if(true) {
 			transacciones.cargarAlojamientos(xmlAlbergues);
 		}
 		if (xmlCamping.isUpdateRequired()) {
-//		if(true) {
 			transacciones.cargarAlojamientos(xmlCamping);
 		}
 
