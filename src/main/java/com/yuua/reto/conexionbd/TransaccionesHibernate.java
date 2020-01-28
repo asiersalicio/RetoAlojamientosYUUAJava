@@ -131,11 +131,18 @@ public class TransaccionesHibernate {
 
 	public Object[] buscarAlojamientosPorFechasYLocalizacion(String municipio, Date fecha1, Date fecha2) {
 		Object[] objetos = null;
-		String query = "from Alojamiento as aloj where aloj.localizacion.municipality='" + municipio + "' and aloj.id not in(select r.alojamiento.id from Reserva as r where (r.fechaEntrada between " + formatFchSql(fecha1) + " and " + formatFchSql(fecha2) + ") OR (r.fechaSalida between " + formatFchSql(fecha1) + " and " + formatFchSql(fecha2) + "))";
+		String query = "from Alojamiento as aloj where aloj.localizacion.tmunicipio='" + municipio + "' and aloj.id not in(select r.alojamiento.id from Reserva as r where (r.fechaEntrada between " + formatFchSql(fecha1) + " and " + formatFchSql(fecha2) + ") OR (r.fechaSalida between " + formatFchSql(fecha1) + " and " + formatFchSql(fecha2) + "))";
 		objetos = ejecutarQuery(query);
 		return objetos;
 	}
 
+	public Object[] buscarAlojamientosReservadosPorPersona(String idDni) {
+		Object[] objetos = null;
+		String query = "from Reserva as res where idDni ='"+idDni+"'";
+		objetos = ejecutarQuery(query);
+		return objetos;
+	}
+	
 	public Object[] buscarAlojamientosPorFechas(Date fecha1, Date fecha2) {
 		Object[] objetos = null;
 		String query = "from Alojamiento as aloj where aloj.id not in(select r.alojamiento.id from Reserva as r where (r.fechaEntrada between " + formatFchSql(fecha1) + " and " + formatFchSql(fecha2) + ") OR (r.fechaSalida between " + formatFchSql(fecha1) + " and " + formatFchSql(fecha2) + "))";

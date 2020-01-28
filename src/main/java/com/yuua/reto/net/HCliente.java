@@ -95,6 +95,14 @@ public class HCliente implements Runnable {
 				resultadoJson = parser.toJson(resultado);
 				server.mandarRequest(new Request(81, resultadoJson), salida);
 				break;
+				//Consultar reservas
+			case 90:
+				datosPeticion = (Object[]) peticion.getObjetoEnviado();
+				resultado = transacciones.buscarAlojamientosReservadosPorPersona((String) datosPeticion[0]);
+				parser = new Gson();
+				resultadoJson = parser.toJson(resultado);
+				server.mandarRequest(new Request(91, resultadoJson), salida);
+				break;
 			default:
 				break;
 			}

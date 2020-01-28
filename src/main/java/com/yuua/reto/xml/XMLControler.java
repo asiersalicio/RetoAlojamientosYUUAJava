@@ -152,6 +152,7 @@ public class XMLControler {
 			nombre = obtenerElement(eElement, "documentname", 0);
 			tipo = obtenerElement(eElement, "lodgingtype", 0);
 			descripcion = obtenerElement(eElement, "turismdescription", 1);
+			descripcion=Utilidades.quitarTags(descripcion);
 			direccion = obtenerElement(eElement, "address", 0);
 			try {
 				telefono = Integer.parseInt(obtenerElement(eElement, "phone", 0).replace(" ", ""));
@@ -182,45 +183,6 @@ public class XMLControler {
 		}
 		return aloj;
 	}
-
-//	public ArrayList<Object> buscarElementos(String nombreCodigo, String nombreCampo, Class<?> tipo) {
-//		ArrayList<Object> elementos = new ArrayList<Object>();
-//		Set<String> nombres = new HashSet<String>();
-//		Set<String> codigos = new HashSet<String>();
-//		for (int i = 0; i < this.size; i++) {
-//			Node nodo = extractNodeFromXML(i);
-//			if (nodo.getNodeType() == Node.ELEMENT_NODE) {
-//				String nombre = obtenerElement((Element) nodo, nombreCampo, 0);
-//				if (nombre.contains(" ")) {
-//					String[] split = nombre.split(" ");
-//					if (split[0].equals(split[1])) {
-//						nombre = split[0];
-//					}
-//				}
-//				nombres.add(nombre);
-//				String codigo = obtenerElement((Element) nodo, nombreCodigo, 0);
-//				if (codigo.contains(" ")) {
-//					codigo = codigo.substring(0, codigo.indexOf(" "));
-//				}
-//				codigos.add(codigo);
-//			}
-//		}
-//		Iterator<String> it1 = codigos.iterator();
-//		Iterator<String> it2 = nombres.iterator();
-//
-//		while (it1.hasNext() && it2.hasNext()) {
-//			if (tipo == Pais.class) {
-//				elementos.add(new Pais(it1.next().toCharArray(), it2.next()));
-//			} else if (tipo == Territorio.class) {
-//				elementos.add(new Territorio(it1.next().toCharArray(), it2.next()));
-//			} else if (tipo == Municipio.class) {
-//				elementos.add(new Municipio(it1.next().toCharArray(), it2.next()));
-//			} else {
-//				return null;
-//			}
-//		}
-//		return elementos;
-//	}
 
 	private String obtenerElement(Element eElement, String tagName, int itemIndex) {
 		Node node = eElement.getElementsByTagName(tagName).item(itemIndex);
