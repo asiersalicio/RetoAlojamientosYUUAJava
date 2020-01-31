@@ -84,10 +84,15 @@ public class HCliente implements Runnable {
 				boolean resbool = transacciones.insertarObjetosJson(datos[0], (String) datos[1]);
 				server.mandarRequest(new Request(51, resbool), salida);
 				break;
+			//Consulta distinct 
 			case 70:
-
+				datosPeticion = (Object[]) peticion.getObjetoEnviado();
+				resultado = transacciones.hacerQueryDistinct((String) datosPeticion[0], (String) datosPeticion[1]);
+				parser = new Gson();
+				resultadoJson = parser.toJson(resultado);
+				server.mandarRequest(new Request(81, resultadoJson), salida);
 				break;
-				//Consulta distinct
+			//Consulta distinct municipios
 			case 80:
 				datosPeticion = (Object[]) peticion.getObjetoEnviado();
 				resultado = transacciones.buscarMunicipiosDistinct((String) datosPeticion[0]);

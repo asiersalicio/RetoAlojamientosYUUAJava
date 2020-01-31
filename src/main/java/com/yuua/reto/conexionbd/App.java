@@ -23,7 +23,7 @@ public class App {
 		xmlAlojamientos.downloadNewXML();
 		xmlAlbergues.downloadNewXML();
 		xmlCamping.downloadNewXML();
-
+		
 		transacciones.insertarRoot();
 
 		if (xmlAlojamientos.isUpdateRequired()) {

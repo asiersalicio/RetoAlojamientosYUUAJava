@@ -37,7 +37,7 @@ public class TransaccionesHibernate {
 			if (aloj != null) {
 				Alojamiento alojbd;
 				try {
-					alojbd = (Alojamiento) ejecutarQuery(crearQuery("Alojamiento", new String[] { "documentname","turismdescription" }, new String[] { aloj.getNombre(),aloj.getDescripcion() }))[0];
+					alojbd = (Alojamiento) ejecutarQuery(crearQuery("Alojamiento", new String[] { "documentname", "turismdescription" }, new String[] { aloj.getNombre(), aloj.getDescripcion() }))[0];
 				} catch (IndexOutOfBoundsException e) {
 					alojbd = null;
 				}
@@ -81,13 +81,19 @@ public class TransaccionesHibernate {
 			case "Reserva":
 				list = gson.fromJson(objetos, new TypeToken<List<Reserva>>() {
 				}.getType());
-				break;
+				for (Object item : list) {
+					Reserva tempRes = (Reserva) item;
+					System.out.println("insert remake :" + tempRes);
+					insertarObjeto(new Reserva(0, tempRes.getFechaEntrada(), tempRes.getFechaSalida(), (Alojamiento) this.consultarById(Alojamiento.class, tempRes.getAlojamiento().getId()), (Usuario) this.consultarById(Usuario.class, tempRes.getUsuario().getIdDni())));
+				}
+				return true;
 			case "Usuario":
 				list = gson.fromJson(objetos, new TypeToken<List<Usuario>>() {
 				}.getType());
 				break;
 			}
 			for (Object item : list) {
+				System.out.println(item);
 				insertarObjeto(item);
 			}
 			return true;
@@ -100,7 +106,7 @@ public class TransaccionesHibernate {
 	public void insertarObjeto(Object objeto) {
 		Session session = factory.openSession();
 		session.beginTransaction();
-		session.saveOrUpdate(objeto);		
+		session.saveOrUpdate(objeto);
 		session.flush();
 		session.getTransaction().commit();
 		session.clear();
@@ -120,7 +126,8 @@ public class TransaccionesHibernate {
 	public boolean consultarAlojamientoPorFechas(Alojamiento aloj, Date fecha1, Date fecha2) {
 		Object[] objetos = null;
 		int id = aloj.getId();
-		String query = "from Alojamiento as aloj,Reserva as res where aloj.id not in(" + "select r.alojamiento.id " + "from Reserva as r " + "where (r.fechaEntrada between " + formatFchSql(fecha1) + " and " + formatFchSql(fecha2) + ") OR (r.fechaSalida between " + formatFchSql(fecha1) + " and " + formatFchSql(fecha2) + ")) and res.alojamiento.id = '" + id + "'";
+		String query = "from Alojamiento as aloj,Reserva as res where aloj.id not in(" + "select r.alojamiento.id " + "from Reserva as r " + "where (DATE(r.fechaEntrada) between " + formatFchSql(fecha1) + " and " + formatFchSql(fecha2) + ") OR (DATE(r.fechaSalida) between " + formatFchSql(fecha1) + " and " + formatFchSql(fecha2) + ")) and res.alojamiento.id = '" + id + "'";
+		System.out.println(query);
 		objetos = ejecutarQuery(query);
 		if (objetos.length == 0 || objetos == null) {
 			return false;
@@ -131,57 +138,66 @@ public class TransaccionesHibernate {
 
 	public Object[] buscarAlojamientosPorFechasYLocalizacion(String municipio, Date fecha1, Date fecha2) {
 		Object[] objetos = null;
-		String query = "from Alojamiento as aloj where aloj.localizacion.tmunicipio='" + municipio + "' and aloj.id not in(select r.alojamiento.id from Reserva as r where (r.fechaEntrada between " + formatFchSql(fecha1) + " and " + formatFchSql(fecha2) + ") OR (r.fechaSalida between " + formatFchSql(fecha1) + " and " + formatFchSql(fecha2) + "))";
+		String query = "from Alojamiento as aloj where aloj.localizacion.tmunicipio='" + municipio + "' and aloj.id not in(select r.alojamiento.id from Reserva as r where (DATE(r.fechaEntrada) between " + formatFchSql(fecha1) + " and " + formatFchSql(fecha2) + ") OR (DATE(r.fechaSalida) between " + formatFchSql(fecha1) + " and " + formatFchSql(fecha2) + "))";
+		System.out.println(query);
 		objetos = ejecutarQuery(query);
 		return objetos;
 	}
 
 	public Object[] buscarAlojamientosReservadosPorPersona(String idDni) {
 		Object[] objetos = null;
-		String query = "from Reserva as res where idDni ='"+idDni+"'";
-		objetos = ejecutarQuery(query);
-		return objetos;
-	}
-	
-	public Object[] buscarAlojamientosPorFechas(Date fecha1, Date fecha2) {
-		Object[] objetos = null;
-		String query = "from Alojamiento as aloj where aloj.id not in(select r.alojamiento.id from Reserva as r where (r.fechaEntrada between " + formatFchSql(fecha1) + " and " + formatFchSql(fecha2) + ") OR (r.fechaSalida between " + formatFchSql(fecha1) + " and " + formatFchSql(fecha2) + "))";
-		objetos = ejecutarQuery(query);
-		return objetos;
-	}
-	
-	public Object[] buscarMunicipiosDistinct(String nombre) {
-		Object[] objetos = null;
-		String query = "select distinct loc.tmunicipio from Localizacion as loc where lower(loc.tmunicipio) LIKE '%"+nombre+"%'";
+		String query = "from Reserva as res where idDni ='" + idDni + "'";
 		objetos = ejecutarQuery(query);
 		return objetos;
 	}
 
+	public Object[] buscarAlojamientosPorFechas(Date fecha1, Date fecha2) {
+		Object[] objetos = null;
+		String query = "from Alojamiento as aloj where aloj.id not in(select r.alojamiento.id from Reserva as r where (DATE(r.fechaEntrada) between " + formatFchSql(fecha1) + " and " + formatFchSql(fecha2) + ") OR (DATE(r.fechaSalida) between " + formatFchSql(fecha1) + " and " + formatFchSql(fecha2) + "))";
+		System.out.println(query);
+		objetos = ejecutarQuery(query);
+		return objetos;
+	}
+
+	public Object[] buscarMunicipiosDistinct(String nombre) {
+		Object[] objetos = null;
+		String query = "select distinct loc.tmunicipio from Localizacion as loc where lower(loc.tmunicipio) LIKE '%" + nombre + "%'";
+		objetos = ejecutarQuery(query);
+		return objetos;
+	}
+	
+	public Object[] hacerQueryDistinct(String clase, String campo) {
+		Object[] objetos = null;
+		String query = "select distinct "+clase+"."+campo+" from "+clase+" "+clase;
+		objetos = ejecutarQuery(query);
+		return objetos;		
+	}
+	
 	private String formatFchSql(Date fecha) {
 		SimpleDateFormat df = new SimpleDateFormat("YYYY-MM-DD");
 		return df.format(fecha);
 	}
 
-	public String crearQuery(String clase, String[] campos, String[] condiciones) {
+	private String crearQuery(String clase, String[] campos, String[] condiciones) {
 		String query = "FROM " + clase;
 		if (condiciones.length > 0) {
 			query += " WHERE ";
 		}
-		for (int i = 0; i < condiciones.length; i++) {	
-			query += "lower("+campos[i] + ") = '" + condiciones[i].toLowerCase() + "'";
+		for (int i = 0; i < condiciones.length; i++) {
+			query += "lower(" + campos[i] + ") = '" + condiciones[i].toLowerCase() + "'";
 			if (i < condiciones.length - 1) {
 				query += " AND ";
 			}
 		}
 		return query;
-	}
+	}	
 
-	public String crearQueryLike(String clase, String[] campos, String[] condiciones) {
+	private String crearQueryLike(String clase, String[] campos, String[] condiciones) {
 		String query = "FROM " + clase;
 		if (condiciones.length > 0) {
 			query += " WHERE ";
 		}
-		for (int i = 0; i < condiciones.length; i++) {			
+		for (int i = 0; i < condiciones.length; i++) {
 			query += "lower(" + campos[i] + ") LIKE '%" + condiciones[i].toLowerCase() + "%'";
 			if (i < condiciones.length - 1) {
 				query += " AND ";
@@ -226,7 +242,7 @@ public class TransaccionesHibernate {
 		session.beginTransaction();
 		Object[] objetos = null;
 		org.hibernate.query.Query<?> queryHbn = session.createQuery(query);
-		queryHbn.setMaxResults(20);
+		//queryHbn.setMaxResults(20);
 		try {
 			objetos = queryHbn.getResultList().toArray();
 		} catch (EntityNotFoundException | ObjectNotFoundException e) {

@@ -28,14 +28,13 @@ public class Utilidades {
 		return texto;
 	}
 
-	public static String quitarTags(String texto) {
-		String original = texto;
-		while (original.contains("<")) {
-			String auxPre = original.substring(0, original.indexOf("<"));
-			String auxPos = original.substring(original.indexOf(">") + 1);
-			original = auxPre + auxPos;
+	public static String quitarTags(String texto) {	
+		while (texto.contains("<")) {
+			String auxPre = texto.substring(0, texto.indexOf("<"));
+			String auxPos = texto.substring(texto.indexOf(">") + 1);
+			texto = auxPre + auxPos;
 		}
-		return original;
+		return texto;
 	}
 
 }
