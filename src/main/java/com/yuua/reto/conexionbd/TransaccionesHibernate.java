@@ -161,18 +161,18 @@ public class TransaccionesHibernate {
 
 	public Object[] buscarMunicipiosDistinct(String nombre) {
 		Object[] objetos = null;
-		String query = "select distinct loc.tmunicipio from Localizacion as loc where lower(loc.tmunicipio) LIKE '%" + nombre + "%'";
+		String query = "select distinct loc.tmunicipio from Localizacion as loc where lower(loc.tmunicipio) LIKE '%" + nombre.toLowerCase() + "%'";
 		objetos = ejecutarQuery(query);
 		return objetos;
 	}
-	
+
 	public Object[] hacerQueryDistinct(String clase, String campo) {
 		Object[] objetos = null;
-		String query = "select distinct "+clase+"."+campo+" from "+clase+" "+clase;
+		String query = "select distinct " + clase + "." + campo + " from " + clase + " " + clase;
 		objetos = ejecutarQuery(query);
-		return objetos;		
+		return objetos;
 	}
-	
+
 	private String formatFchSql(Date fecha) {
 		SimpleDateFormat df = new SimpleDateFormat("YYYY-MM-DD");
 		return df.format(fecha);
@@ -190,7 +190,7 @@ public class TransaccionesHibernate {
 			}
 		}
 		return query;
-	}	
+	}
 
 	private String crearQueryLike(String clase, String[] campos, String[] condiciones) {
 		String query = "FROM " + clase;
@@ -237,12 +237,43 @@ public class TransaccionesHibernate {
 		}
 	}
 
+	public boolean queryDelete(String clase, String[] campos, String[] condiciones) {
+		try {
+			String query = "DELETE " + clase;
+			if (condiciones.length > 0) {
+				query += " WHERE ";
+			}
+			for (int i = 0; i < condiciones.length; i++) {
+				query += "lower(" + campos[i] + ") = '" + condiciones[i].toLowerCase() + "'";
+				if (i < condiciones.length - 1) {
+					query += " AND ";
+				}
+			}
+			ejecutarQueryDelete(query);
+			return true;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+	public void ejecutarQueryDelete(String query) {
+		Session session = factory.openSession();
+		session.beginTransaction();
+		org.hibernate.query.Query<?> queryHbn = session.createQuery(query);
+		queryHbn.executeUpdate();
+		session.flush();
+		session.getTransaction().commit();
+		session.clear();
+		session.close();
+	}
+
 	public Object[] ejecutarQuery(String query) {
 		Session session = factory.openSession();
 		session.beginTransaction();
 		Object[] objetos = null;
 		org.hibernate.query.Query<?> queryHbn = session.createQuery(query);
-		//queryHbn.setMaxResults(20);
+		// queryHbn.setMaxResults(20);
 		try {
 			objetos = queryHbn.getResultList().toArray();
 		} catch (EntityNotFoundException | ObjectNotFoundException e) {

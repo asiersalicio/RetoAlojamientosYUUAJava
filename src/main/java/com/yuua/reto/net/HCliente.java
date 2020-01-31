@@ -78,6 +78,13 @@ public class HCliente implements Runnable {
 				resultadoJson = parser.toJson(resultado);
 				server.mandarRequest(new Request(61, resultadoJson), salida);
 				break;
+			//Consulta delete
+			case 120:
+				datosPeticion = (Object[]) peticion.getObjetoEnviado();
+				resultadoBoolean=transacciones.queryDelete((String) datosPeticion[0], (String[]) datosPeticion[1], (String[]) datosPeticion[2]);
+				parser = new Gson();
+				server.mandarRequest(new Request(121, resultadoBoolean), salida);
+				break;						
 			// Insert
 			case 50:
 				Object[] datos = (Object[]) peticion.getObjetoEnviado();
