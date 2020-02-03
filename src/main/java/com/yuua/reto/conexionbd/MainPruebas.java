@@ -1,5 +1,8 @@
 package com.yuua.reto.conexionbd;
 
+import java.util.ArrayList;
+import java.util.Collections;
+
 import com.yuua.reto.xml.Utilidades;
 
 public class MainPruebas {
@@ -11,9 +14,13 @@ public class MainPruebas {
 		
 		String cadena1 = "acb";
 		String cadena2 = "abc";
-		String[] cadenitas= {"bb","abc","abcd","abc","abcd"};
+		String[] cadenitas= {"bb","abc","abcd","abc","abcd","zz"};
+		ArrayList<String> cadenitasList=new ArrayList<String>();
+		Collections.addAll(cadenitasList, cadenitas);
 		//String ordenada=Utilidades.ordenar2String(cadena1, cadena2, 0);
-		Utilidades.bubbleSort(cadenitas);
+		Utilidades util=new Utilidades();
+		//Utilidades.OrdenarString(cadenitasList,Utilidades.ASCENDENTE);
+		//Arrays.rev
 		for (String string : cadenitas) {
 			System.out.println(string);
 		}
